@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cupcake-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cupcake_store
+      POSTGRES_USER: cupcake
+      POSTGRES_PASSWORD: cupcake123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cupcake -d cupcake_store"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
