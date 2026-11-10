@@ -1,0 +1,18 @@
+---
+description: Convenções de escrita Java da API da loja de cupcakes
+globs: src/main/java/**/*.java,src/test/java/**/*.java
+alwaysApply: false
+---
+
+# Escrita no back-end
+
+Java 17, pacote `com.pit.cupcakestore`. Mensagens de validação e de `BusinessException` em português, claras para o cliente.
+
+- Classe em PascalCase. Método e campo em camelCase.
+- Sufixos: `Controller`, `Service`, `Repository`, `Request`, `Response`.
+- Injeção por construtor. Sem `@Autowired` em campo e sem Lombok.
+- Não registre senha, hash ou corpo completo de cadastro em log.
+
+```java
+throw new BusinessException("Já existe uma conta com este e-mail.");
+```

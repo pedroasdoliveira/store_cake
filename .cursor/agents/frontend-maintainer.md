@@ -1,0 +1,1 @@
+../../frontend/.cursor/agents/frontend-maintainer.md

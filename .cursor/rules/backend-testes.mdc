@@ -1,0 +1,17 @@
+---
+description: Testes JUnit 5 e Mockito dos services da loja de cupcakes
+globs: backend/src/test/java/**/*.java
+alwaysApply: false
+---
+
+# Testes do back-end
+
+JUnit 5 e Mockito sobre o service. Repositórios mockados. Sem banco e sem subir o Spring no teste de service.
+
+- Classe `*ServiceTest` em `src/test/java`, no pacote espelhado.
+- `@ExtendWith(MockitoExtension.class)`, `@Mock` nos repositórios, `@InjectMocks` no service.
+- O nome do método descreve a regra, como `createShouldCalculateTotalFromCatalogPrices`.
+- Cubra o caminho feliz e `assertThrows` de `BusinessException`: e-mail duplicado, senha inválida, usuário ou produto inexistente.
+- Comando, dentro de `backend`: `./mvnw test`.
+
+O preço esperado é o do `Product` mockado, não o valor enviado no request.

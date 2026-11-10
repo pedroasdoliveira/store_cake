@@ -1,0 +1,19 @@
+---
+description: Contrato REST da loja de cupcakes
+globs: src/main/java/**/*.java
+alwaysApply: false
+---
+
+# Contrato REST
+
+Base `http://localhost:8080`, prefixo `/api`, JSON. CORS liberado para `http://localhost:5173`.
+
+- `POST /api/auth/register` → 201
+- `POST /api/auth/login` → 200
+- `GET /api/products` e `GET /api/products/{id}` → 200
+- `POST /api/orders` → 201
+- `GET /api/orders?userId={id}` → 200
+
+Erro no corpo `{ "message": "..." }`, que é o campo lido por `frontend/src/api/client.ts`.
+
+Recurso novo usa o mesmo prefixo, o mesmo envelope de erro e um DTO próprio. Não exponha a entidade JPA. Campo novo na resposta exige atualizar `frontend/src/types.ts` e o cliente `api`.

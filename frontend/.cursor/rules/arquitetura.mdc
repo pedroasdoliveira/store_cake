@@ -1,0 +1,17 @@
+---
+description: Arquitetura da interface da loja de cupcakes (páginas, contexto e API)
+globs: src/**/*.ts,src/**/*.tsx
+alwaysApply: false
+---
+
+# Arquitetura do front-end
+
+SPA React 18, TypeScript, Vite e React Router. Fluxos do cliente: vitrine, carrinho, cadastro, login, checkout e histórico. Funciona em web e mobile.
+
+- `src/pages` compõe a rota. `src/components` guarda peças reutilizáveis (`Navbar`, `ProductCard`, `Feedback`).
+- Estado compartilhado só em `AuthContext` e `CartContext`. Estado de formulário fica no componente da tela.
+- HTTP só em `src/api/client.ts`. Telas chamam `api.*`, nunca `fetch` direto.
+- Carrinho na chave `cupcake-cart`. Sessão na chave `cupcake-auth`. Não renomeie sem migrar o valor já salvo.
+- Rotas: `/`, `/carrinho`, `/login`, `/cadastro`, `/checkout`, `/historico`.
+
+Não adicione gerenciador de estado, CSS-in-JS ou biblioteca de UI sem pedido explícito.

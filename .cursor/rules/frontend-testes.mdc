@@ -1,0 +1,20 @@
+---
+description: Testes Vitest e Playwright da loja de cupcakes
+globs: frontend/src/**/*.test.ts,frontend/src/**/*.test.tsx,frontend/e2e/**/*.ts
+alwaysApply: false
+---
+
+# Testes do front-end
+
+- Componente e contexto: arquivo ao lado do código (`*.test.tsx`, `*.test.ts`). Use `renderWithProviders` de `src/test/render.tsx` para rota, auth e carrinho.
+- Afirme o que o cliente vê: incluir doce, validar login, concluir checkout, abrir histórico. Não afirme detalhe interno.
+- O cliente HTTP mocka `fetch` em `client.test.ts`.
+- E2E fica em `e2e/` com Playwright e a API simulada. O fluxo não depende de Java nem de PostgreSQL.
+- Comandos, dentro de `frontend`: `npm test` e `npm run test:e2e`.
+
+```tsx
+renderWithProviders(<Carrinho />, {
+  route: "/carrinho",
+  cart: [item],
+});
+```

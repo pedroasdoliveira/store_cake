@@ -1,0 +1,15 @@
+---
+description: Interface responsiva da loja de cupcakes para web e mobile
+globs: src/**/*.tsx,src/**/*.css
+alwaysApply: false
+---
+
+# Interface web e mobile
+
+Estenda o visual de `src/index.css`. Tokens: `--bg`, `--surface`, `--ink`, `--muted`, `--rose`, `--rose-dark`, `--cream`, `--ok`, `--err`.
+
+- Títulos com Playfair Display. Texto com Source Sans 3.
+- Conteúdo até 1100px. Abaixo de 720px, empilhe navbar, formulários e itens do carrinho.
+- Botões e links de ação mantêm área de toque confortável, no padrão de padding já usado.
+- Texto sobre `--rose` e mensagens de erro permanecem legíveis. Imagem de produto usa `object-fit: cover` e texto alternativo com o nome do doce.
+- Classes novas entram em `index.css`, junto do bloco da tela correspondente. Não crie uma folha por página.

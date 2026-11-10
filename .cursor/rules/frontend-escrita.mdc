@@ -1,0 +1,21 @@
+---
+description: Convenções de escrita e TypeScript da interface da loja de cupcakes
+globs: frontend/src/**/*.ts,frontend/src/**/*.tsx
+alwaysApply: false
+---
+
+# Escrita no front-end
+
+Textos visíveis ao cliente ficam em português, com mensagens curtas de sucesso e erro.
+
+- Componentes e tipos em PascalCase. Arquivos de tela e componente também: `Catalogo.tsx`, `ProductCard.tsx`.
+- Funções e variáveis em camelCase. Utilitários como `formatCurrency` ficam em `src/utils`.
+- Sem `any`. Respostas da API usam os tipos de `src/types.ts`.
+- Nomes de domínio: `product`, `cartItem`, `order`. Evite `data` ou `temp` quando o domínio já tem nome.
+- Preço exibido passa por `formatCurrency` em `src/utils/money.ts`.
+
+```tsx
+const visibleProducts = products.filter(
+  (product) => product.category === selectedCategory
+);
+```

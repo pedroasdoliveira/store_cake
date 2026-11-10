@@ -1,0 +1,17 @@
+---
+description: Arquitetura em camadas da API da loja de cupcakes
+globs: backend/src/main/java/**/*.java
+alwaysApply: false
+---
+
+# Arquitetura da API
+
+Camadas, de fora para dentro: `controller` → `service` → `repository`. `model` é a entidade JPA. `dto` entra e sai. `exception` e `config` ficam na borda.
+
+- O controller traduz HTTP: `@Valid`, status e chamada ao service. Sem regra de negócio e sem repository no controller.
+- O service aplica a regra, abre a transação e devolve DTO (`OrderResponse.from`).
+- Preço e total do pedido vêm do produto persistido, nunca do valor enviado pelo cliente.
+- Senha só com `PasswordEncoder` (BCrypt). `AuthResponse` não inclui senha.
+- `BusinessException` vira 400 com `ErrorResponse`. Validação também. Erro inesperado vira 500 com mensagem genérica.
+
+O login atual identifica o cliente pelo `userId` de `AuthResponse`. Não adicione filter chain, JWT ou outro esquema de sessão sem pedido explícito.

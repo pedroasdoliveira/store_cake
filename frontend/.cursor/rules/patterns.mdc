@@ -1,0 +1,26 @@
+---
+description: Patterns de React da loja de cupcakes
+globs: src/**/*.tsx,src/**/*.ts
+alwaysApply: false
+---
+
+# Patterns de React
+
+- Componentes funcionais. Extraia hook só quando a mesma lógica aparecer em duas telas.
+- Sucesso e erro de operação usam `Feedback` com `type` `success` ou `error`.
+- Atualize o carrinho de forma imutável, no estilo de `CartContext`.
+- Toda tela que busca dados trata lista vazia, carregamento e falha da API.
+- Formulários controlados. Desabilite o botão de envio enquanto a requisição está em andamento.
+
+```tsx
+const [feedback, setFeedback] = useState<FeedbackMessage | null>(null);
+
+try {
+  await api.login(credentials);
+} catch (error) {
+  setFeedback({
+    type: "error",
+    text: error instanceof Error ? error.message : "Não foi possível entrar.",
+  });
+}
+```

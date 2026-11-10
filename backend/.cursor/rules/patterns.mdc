@@ -1,0 +1,14 @@
+---
+description: Patterns de serviço, validação e transação da API da loja de cupcakes
+globs: src/main/java/**/*.java
+alwaysApply: false
+---
+
+# Patterns do back-end
+
+- Um caso de uso por método de service: `register`, `login`, `create`, `listByUser`.
+- Escrita com `@Transactional`. Leitura com `@Transactional(readOnly = true)`.
+- Entrada inválida no DTO com Jakarta Validation (`@NotBlank`, `@NotNull`, `@NotEmpty`, `@Valid` na lista).
+- Falha de domínio lança `BusinessException`. Não devolva `null` para "não encontrado".
+- Normalize texto no service: `trim`, e-mail em minúsculas, UF em maiúsculas.
+- Nomeie a consulta no repository: `findByEmailIgnoreCase`, `findByUserIdOrderByCreatedAtDesc`.

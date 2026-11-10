@@ -1,0 +1,1 @@
+../../frontend/.cursor/agents/frontend-ui-designer.md
