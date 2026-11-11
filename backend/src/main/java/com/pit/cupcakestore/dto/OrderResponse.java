@@ -10,6 +10,7 @@ public class OrderResponse {
 
     private Long id;
     private Long userId;
+    private String customerName;
     private String street;
     private String number;
     private String complement;
@@ -22,6 +23,7 @@ public class OrderResponse {
     private BigDecimal subtotal;
     private BigDecimal discountAmount;
     private String promotionTitle;
+    private String deliveryNote;
     private BigDecimal total;
     private LocalDateTime createdAt;
     private List<OrderItemResponse> items;
@@ -30,6 +32,7 @@ public class OrderResponse {
         OrderResponse response = new OrderResponse();
         response.id = order.getId();
         response.userId = order.getUser().getId();
+        response.customerName = order.getUser().getName();
         response.street = order.getStreet();
         response.number = order.getNumber();
         response.complement = order.getComplement();
@@ -42,6 +45,7 @@ public class OrderResponse {
         response.subtotal = order.getSubtotal();
         response.discountAmount = order.getDiscountAmount();
         response.promotionTitle = order.getPromotionTitle();
+        response.deliveryNote = order.getDeliveryNote();
         response.total = order.getTotal();
         response.createdAt = order.getCreatedAt();
         response.items = order.getItems().stream().map(OrderItemResponse::from).toList();
@@ -54,6 +58,10 @@ public class OrderResponse {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
     }
 
     public String getStreet() {
@@ -102,6 +110,10 @@ public class OrderResponse {
 
     public String getPromotionTitle() {
         return promotionTitle;
+    }
+
+    public String getDeliveryNote() {
+        return deliveryNote;
     }
 
     public BigDecimal getTotal() {

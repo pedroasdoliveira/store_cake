@@ -5,6 +5,7 @@ import { Feedback } from "../components/Feedback";
 import { useAuth } from "../context/AuthContext";
 import type { FeedbackMessage, Order } from "../types";
 import { formatCurrency } from "../utils/money";
+import { orderStatusLabel } from "../utils/orderStatus";
 
 export function Historico() {
   const { user } = useAuth();
@@ -47,7 +48,7 @@ export function Historico() {
           <article key={order.id} className="order-card">
             <header>
               <h2>Pedido #{order.id}</h2>
-              <span>{order.status}</span>
+              <span>{orderStatusLabel(order.status)}</span>
             </header>
             <p>{new Date(order.createdAt).toLocaleString("pt-BR")}</p>
             <p>
@@ -66,6 +67,7 @@ export function Historico() {
                 {order.discountAmount ? ` (− ${formatCurrency(order.discountAmount)})` : ""}
               </p>
             )}
+            {order.deliveryNote && <p>Entrega: {order.deliveryNote}</p>}
             <strong>Total: {formatCurrency(order.total)}</strong>
           </article>
         ))}

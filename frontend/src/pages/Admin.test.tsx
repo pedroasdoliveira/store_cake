@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
-import { adminUser, loggedUser, redVelvet } from "../test/fixtures";
+import { adminUser, confirmedOrder, loggedUser, redVelvet } from "../test/fixtures";
 import { renderWithProviders } from "../test/render";
 
 vi.mock("../api/client", () => ({
@@ -15,6 +15,8 @@ vi.mock("../api/client", () => ({
     listAdminPromotions: vi.fn().mockResolvedValue([]),
     createPromotion: vi.fn(),
     updatePromotion: vi.fn(),
+    listAdminOrders: vi.fn().mockResolvedValue([]),
+    updateOrder: vi.fn(),
   },
 }));
 
@@ -109,5 +111,38 @@ describe("Admin", () => {
       active: true,
     });
     expect(await screen.findByRole("status")).toHaveTextContent("Promoção publicada na página inicial.");
+  });
+
+  it("atualiza status e entrega sem alterar o valor gerado", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.listAdminOrders).mockResolvedValue([
+      { ...confirmedOrder, customerName: "Ana Cupcake", total: 25.8 },
+    ]);
+    vi.mocked(api.updateOrder).mockResolvedValue({
+      ...confirmedOrder,
+      customerName: "Ana Cupcake",
+      status: "OUT_FOR_DELIVERY",
+      deliveryNote: "Portaria 2",
+      total: 25.8,
+    });
+    renderWithProviders(<App />, { route: "/admin", user: adminUser });
+
+    await user.click(await screen.findByRole("button", { name: "Pedidos" }));
+    expect(await screen.findByText(/Valor gerado/)).toBeInTheDocument();
+    expect(screen.getAllByText(/R\$\s*25,80/).length).toBeGreaterThan(0);
+    await user.selectOptions(screen.getByLabelText("Status do pedido 42"), "OUT_FOR_DELIVERY");
+    await user.type(screen.getByLabelText("Observação do pedido 42"), "Portaria 2");
+    await user.click(screen.getByRole("button", { name: "Salvar pedido 42" }));
+
+    expect(api.updateOrder).toHaveBeenCalledWith(
+      1,
+      42,
+      expect.objectContaining({
+        status: "OUT_FOR_DELIVERY",
+        street: "Rua das Flores",
+        deliveryNote: "Portaria 2",
+      })
+    );
+    expect(await screen.findByRole("status")).toHaveTextContent("Pedido #42 atualizado.");
   });
 });

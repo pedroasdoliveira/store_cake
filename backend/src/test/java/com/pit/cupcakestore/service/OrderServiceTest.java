@@ -3,6 +3,7 @@ package com.pit.cupcakestore.service;
 import com.pit.cupcakestore.dto.CreateOrderRequest;
 import com.pit.cupcakestore.dto.OrderItemRequest;
 import com.pit.cupcakestore.dto.OrderResponse;
+import com.pit.cupcakestore.dto.UpdateOrderRequest;
 import com.pit.cupcakestore.exception.BusinessException;
 import com.pit.cupcakestore.model.Order;
 import com.pit.cupcakestore.model.Product;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +43,9 @@ class OrderServiceTest {
 
     @Mock
     private PromotionRepository promotionRepository;
+
+    @Mock
+    private AdminAccess adminAccess;
 
     @InjectMocks
     private OrderService orderService;
@@ -160,6 +165,61 @@ class OrderServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(BusinessException.class, () -> orderService.create(baseRequest()));
+    }
+
+    @Test
+    void updateShouldChangeStatusAndDeliveryWithoutChangingTotal() {
+        User customer = new User();
+        customer.setId(7L);
+        customer.setName("Ana Cupcake");
+        Order order = new Order();
+        order.setId(42L);
+        order.setUser(customer);
+        order.setTotal(new BigDecimal("20.00"));
+        order.setStatus("CONFIRMED");
+        when(orderRepository.findById(42L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UpdateOrderRequest request = new UpdateOrderRequest();
+        request.setStatus("out_for_delivery");
+        request.setStreet("Rua Nova");
+        request.setNumber("50");
+        request.setNeighborhood("Centro");
+        request.setCity("São Paulo");
+        request.setState("sp");
+        request.setZipCode("01000-000");
+        request.setDeliveryNote("Portaria 2");
+
+        OrderResponse response = orderService.update(1L, 42L, request);
+
+        assertEquals("OUT_FOR_DELIVERY", response.getStatus());
+        assertEquals("Rua Nova", response.getStreet());
+        assertEquals("SP", response.getState());
+        assertEquals("Portaria 2", response.getDeliveryNote());
+        assertEquals("Ana Cupcake", response.getCustomerName());
+        assertEquals(new BigDecimal("20.00"), response.getTotal());
+        verify(adminAccess).require(1L);
+    }
+
+    @Test
+    void updateShouldRejectUnknownStatus() {
+        UpdateOrderRequest request = new UpdateOrderRequest();
+        request.setStatus("ENVIADO");
+        request.setStreet("Rua Nova");
+        request.setNumber("50");
+        request.setNeighborhood("Centro");
+        request.setCity("São Paulo");
+        request.setState("SP");
+        request.setZipCode("01000-000");
+
+        assertThrows(BusinessException.class, () -> orderService.update(1L, 42L, request));
+    }
+
+    @Test
+    void listAllShouldRejectCustomer() {
+        when(adminAccess.require(7L)).thenThrow(new BusinessException("Apenas um administrador pode fazer esta ação."));
+
+        assertThrows(BusinessException.class, () -> orderService.listAll(7L));
     }
 
     @Test

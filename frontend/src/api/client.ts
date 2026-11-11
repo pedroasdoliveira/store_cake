@@ -83,6 +83,26 @@ export const api = {
       body: JSON.stringify(payload),
     }),
   listOrders: (userId: number) => request<Order[]>(`/api/orders?userId=${userId}`),
+  listAdminOrders: (adminUserId: number) => request<Order[]>(`/api/admin/orders?adminUserId=${adminUserId}`),
+  updateOrder: (
+    adminUserId: number,
+    orderId: number,
+    payload: {
+      status: string;
+      street: string;
+      number: string;
+      complement?: string;
+      neighborhood: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      deliveryNote?: string;
+    }
+  ) =>
+    request<Order>(`/api/admin/orders/${orderId}?adminUserId=${adminUserId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
   listPromotions: () => request<Promotion[]>("/api/promotions"),
   listAdminPromotions: (adminUserId: number) =>
     request<Promotion[]>(`/api/admin/promotions?adminUserId=${adminUserId}`),

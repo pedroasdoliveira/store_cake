@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS orders (
     subtotal NUMERIC(10, 2),
     discount_amount NUMERIC(10, 2),
     promotion_title VARCHAR(120),
+    delivery_note VARCHAR(240),
     total NUMERIC(10, 2) NOT NULL CHECK (total >= 0),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { CatalogManager } from "../components/admin/CatalogManager";
+import { OrderManager } from "../components/admin/OrderManager";
 import { ProductManager } from "../components/admin/ProductManager";
 import { PromotionManager } from "../components/admin/PromotionManager";
 
-type AdminSection = "catalogos" | "produtos" | "promocoes";
+type AdminSection = "catalogos" | "produtos" | "promocoes" | "pedidos";
 
 export function Admin() {
   const [section, setSection] = useState<AdminSection>("catalogos");
@@ -34,10 +35,18 @@ export function Admin() {
         >
           Promoções
         </button>
+        <button
+          type="button"
+          className={section === "pedidos" ? "chip active" : "chip"}
+          onClick={() => setSection("pedidos")}
+        >
+          Pedidos
+        </button>
       </div>
       {section === "catalogos" && <CatalogManager />}
       {section === "produtos" && <ProductManager />}
       {section === "promocoes" && <PromotionManager />}
+      {section === "pedidos" && <OrderManager />}
     </section>
   );
 }

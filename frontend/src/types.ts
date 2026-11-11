@@ -63,6 +63,7 @@ export interface OrderItem {
 export interface Order {
   id: number;
   userId: number;
+  customerName?: string;
   street: string;
   number: string;
   complement?: string;
@@ -75,6 +76,7 @@ export interface Order {
   subtotal?: number;
   discountAmount?: number;
   promotionTitle?: string;
+  deliveryNote?: string;
   total: number;
   createdAt: string;
   items: OrderItem[];

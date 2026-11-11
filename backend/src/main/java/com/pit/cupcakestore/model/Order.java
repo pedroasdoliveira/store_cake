@@ -65,6 +65,9 @@ public class Order {
     @Column(name = "promotion_title", length = 120)
     private String promotionTitle;
 
+    @Column(name = "delivery_note", length = 240)
+    private String deliveryNote;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
@@ -199,6 +202,14 @@ public class Order {
 
     public void setPromotionTitle(String promotionTitle) {
         this.promotionTitle = promotionTitle;
+    }
+
+    public String getDeliveryNote() {
+        return deliveryNote;
+    }
+
+    public void setDeliveryNote(String deliveryNote) {
+        this.deliveryNote = deliveryNote;
     }
 
     public BigDecimal getTotal() {
