@@ -2,6 +2,7 @@ package com.pit.cupcakestore.service;
 
 import com.pit.cupcakestore.dto.AuthResponse;
 import com.pit.cupcakestore.dto.LoginRequest;
+import com.pit.cupcakestore.dto.RegisterAdminRequest;
 import com.pit.cupcakestore.dto.RegisterRequest;
 import com.pit.cupcakestore.exception.BusinessException;
 import com.pit.cupcakestore.model.User;
@@ -32,6 +33,9 @@ class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private AdminAccess adminAccess;
 
     @InjectMocks
     private AuthService authService;
@@ -107,5 +111,52 @@ class AuthServiceTest {
         when(passwordEncoder.matches("senha123", "hash")).thenReturn(false);
 
         assertThrows(BusinessException.class, () -> authService.login(loginRequest));
+    }
+
+    @Test
+    void registerAdminShouldPersistAnotherAdministrator() {
+        RegisterAdminRequest request = adminRequest();
+        when(passwordEncoder.encode("senha123")).thenReturn("hash");
+        when(userRepository.existsByEmailIgnoreCase("novo@doceninho.com")).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            user.setId(8L);
+            return user;
+        });
+
+        AuthResponse response = authService.registerAdmin(request);
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+        assertEquals("ADMIN", captor.getValue().getRole());
+        assertEquals("hash", captor.getValue().getPassword());
+        assertEquals("ADMIN", response.getRole());
+        assertEquals("Administrador cadastrado com sucesso.", response.getMessage());
+        verify(adminAccess).require(1L);
+    }
+
+    @Test
+    void registerAdminShouldRejectDuplicatedEmail() {
+        when(userRepository.existsByEmailIgnoreCase("novo@doceninho.com")).thenReturn(true);
+
+        assertThrows(BusinessException.class, () -> authService.registerAdmin(adminRequest()));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void registerAdminShouldRejectWhenActorIsNotAdmin() {
+        when(adminAccess.require(1L)).thenThrow(new BusinessException("Apenas um administrador pode fazer esta ação."));
+
+        assertThrows(BusinessException.class, () -> authService.registerAdmin(adminRequest()));
+        verify(userRepository, never()).save(any());
+    }
+
+    private RegisterAdminRequest adminRequest() {
+        RegisterAdminRequest request = new RegisterAdminRequest();
+        request.setAdminUserId(1L);
+        request.setName("Novo Admin");
+        request.setEmail("novo@doceninho.com");
+        request.setPassword("senha123");
+        return request;
     }
 }

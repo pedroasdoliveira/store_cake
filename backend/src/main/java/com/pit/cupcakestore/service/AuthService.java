@@ -2,6 +2,7 @@ package com.pit.cupcakestore.service;
 
 import com.pit.cupcakestore.dto.AuthResponse;
 import com.pit.cupcakestore.dto.LoginRequest;
+import com.pit.cupcakestore.dto.RegisterAdminRequest;
 import com.pit.cupcakestore.dto.RegisterRequest;
 import com.pit.cupcakestore.exception.BusinessException;
 import com.pit.cupcakestore.model.User;
@@ -15,10 +16,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AdminAccess adminAccess;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AdminAccess adminAccess) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.adminAccess = adminAccess;
     }
 
     @Transactional
@@ -47,6 +50,23 @@ public class AuthService {
         }
 
         return toResponse(user, "Login realizado com sucesso.");
+    }
+
+    @Transactional
+    public AuthResponse registerAdmin(RegisterAdminRequest request) {
+        adminAccess.require(request.getAdminUserId());
+        if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
+            throw new BusinessException("Já existe uma conta com este e-mail.");
+        }
+
+        User user = new User();
+        user.setName(request.getName().trim());
+        user.setEmail(request.getEmail().trim().toLowerCase());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole("ADMIN");
+
+        User saved = userRepository.save(user);
+        return toResponse(saved, "Administrador cadastrado com sucesso.");
     }
 
     private AuthResponse toResponse(User user, String message) {

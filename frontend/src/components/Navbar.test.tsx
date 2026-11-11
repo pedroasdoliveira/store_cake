@@ -13,6 +13,7 @@ describe("Navbar", () => {
     expect(screen.getByRole("link", { name: "Entrar" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Cadastrar" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Carrinho (0)" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /administrador/i })).not.toBeInTheDocument();
   });
 
   it("mostra o nome do usuário, pedidos e quantidade do carrinho", async () => {

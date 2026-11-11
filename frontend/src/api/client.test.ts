@@ -59,6 +59,42 @@ describe("api client", () => {
     );
   });
 
+  it("cadastra outro administrador na rota privada da API", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse(
+        {
+          userId: 8,
+          name: "Novo Admin",
+          email: "novo@doceninho.com",
+          role: "ADMIN",
+          message: "Administrador cadastrado com sucesso.",
+        },
+        201
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await api.registerAdmin({
+      adminUserId: 1,
+      name: "Novo Admin",
+      email: "novo@doceninho.com",
+      password: "senha123",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:8080/api/auth/admins",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          adminUserId: 1,
+          name: "Novo Admin",
+          email: "novo@doceninho.com",
+          password: "senha123",
+        }),
+      })
+    );
+  });
+
   it("propaga a mensagem de erro da API", async () => {
     vi.stubGlobal(
       "fetch",

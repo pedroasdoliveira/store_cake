@@ -2,6 +2,7 @@ package com.pit.cupcakestore.controller;
 
 import com.pit.cupcakestore.dto.AuthResponse;
 import com.pit.cupcakestore.dto.LoginRequest;
+import com.pit.cupcakestore.dto.RegisterAdminRequest;
 import com.pit.cupcakestore.dto.RegisterRequest;
 import com.pit.cupcakestore.service.AuthService;
 import jakarta.validation.Valid;
@@ -30,5 +31,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/admins")
+    public ResponseEntity<AuthResponse> registerAdmin(@Valid @RequestBody RegisterAdminRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerAdmin(request));
     }
 }

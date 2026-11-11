@@ -47,6 +47,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  registerAdmin: (payload: { adminUserId: number; name: string; email: string; password: string }) =>
+    request<AuthUser & { message: string }>("/api/auth/admins", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
   createOrder: (payload: unknown) =>
     request<Order>("/api/orders", {
       method: "POST",
