@@ -40,9 +40,14 @@ export function Catalogo() {
     return ["todos", ...unique];
   }, [catalogs, products]);
 
-  const visible = products.filter(
-    (product) => category === "todos" || product.category === category
-  );
+  const heroPhotos = products.filter((product) => product.imageUrl.trim() !== "").slice(0, 3);
+  const sectionNames = category === "todos" ? categories.filter((item) => item !== "todos") : [category];
+  const sections = sectionNames
+    .map((name) => ({
+      name,
+      products: products.filter((product) => product.category === name),
+    }))
+    .filter((section) => category !== "todos" || section.products.length > 0);
 
   return (
     <section>
@@ -53,6 +58,13 @@ export function Catalogo() {
           <p>{store.description}</p>
           {store.phone && <p>Contato: {store.phone}</p>}
         </div>
+        {heroPhotos.length > 0 && (
+          <div className="hero-photos">
+            {heroPhotos.map((product) => (
+              <img key={product.id} src={product.imageUrl} alt={product.name} />
+            ))}
+          </div>
+        )}
       </div>
 
       <Feedback message={feedback} />
@@ -85,21 +97,29 @@ export function Catalogo() {
 
       {loading ? (
         <p>Carregando vitrine...</p>
+      ) : sections.length === 0 ? (
+        <p>Nenhum cupcake neste catálogo.</p>
       ) : (
-        <>
-          {visible.length === 0 && <p>Nenhum cupcake neste catálogo.</p>}
-          <div className="grid">
-            {visible.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAdded={() =>
-                  setFeedback({ type: "success", text: `${product.name} adicionado ao carrinho.` })
-                }
-              />
-            ))}
-          </div>
-        </>
+        sections.map((section) => (
+          <section key={section.name} className="catalog-section" aria-labelledby={`catalog-${section.name}`}>
+            <h2 id={`catalog-${section.name}`}>{section.name}</h2>
+            {section.products.length === 0 ? (
+              <p>Nenhum cupcake neste catálogo.</p>
+            ) : (
+              <div className="grid">
+                {section.products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAdded={() =>
+                      setFeedback({ type: "success", text: `${product.name} adicionado ao carrinho.` })
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        ))
       )}
     </section>
   );

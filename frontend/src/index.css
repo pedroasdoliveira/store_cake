@@ -74,6 +74,59 @@ main {
   font-weight: 700;
 }
 
+.cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--rose);
+  color: white;
+  font-size: 0.75rem;
+}
+
+.account {
+  position: relative;
+}
+
+.account-trigger,
+.menu-item {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--cream);
+}
+
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 20;
+  display: grid;
+  gap: 4px;
+  min-width: 180px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.account-menu a,
+.account-menu button {
+  justify-content: flex-start;
+  text-align: left;
+}
+
 .cta-link,
 .button-link,
 button {
@@ -99,11 +152,43 @@ button {
 }
 
 .hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
   background: linear-gradient(135deg, #fff, var(--cream));
   border-radius: 24px;
   padding: 32px;
   margin-bottom: 24px;
   box-shadow: var(--shadow);
+}
+
+.hero-photos {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.hero-photos img {
+  width: 140px;
+  height: 140px;
+  margin-left: -28px;
+  border: 4px solid white;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--cream);
+}
+
+.hero-photos img:first-child {
+  margin-left: 0;
+}
+
+.catalog-section {
+  margin-bottom: 28px;
+}
+
+.catalog-section h2 {
+  margin: 0 0 12px;
 }
 
 .eyebrow {
@@ -606,6 +691,16 @@ select {
   .navbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-photos img {
+    width: 96px;
+    height: 96px;
   }
 
   .grid-form,

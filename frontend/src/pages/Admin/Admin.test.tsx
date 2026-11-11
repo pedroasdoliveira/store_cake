@@ -61,7 +61,8 @@ describe("Admin", () => {
     renderWithProviders(<App />, { route: "/admin", user: adminUser });
 
     expect(await screen.findByRole("heading", { name: "Painel da loja" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Painel" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Administrador" }));
+    expect(screen.getByRole("menuitem", { name: "Painel" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /novo administrador/i })).not.toBeInTheDocument();
 
     await user.type(screen.getByLabelText("Nome"), "Especiais");

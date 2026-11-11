@@ -148,10 +148,10 @@ test("exibe a vitrine e persiste o carrinho após recarregar", async ({ page }) 
 
   await page.getByRole("article").filter({ hasText: "Red Velvet" }).getByRole("button", { name: "Adicionar" }).click();
   await expect(page.getByRole("status")).toContainText("Red Velvet adicionado ao carrinho.");
-  await expect(page.getByRole("link", { name: "Carrinho (1)" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Carrinho, 1 item" })).toBeVisible();
 
   await page.reload();
-  await expect(page.getByRole("link", { name: "Carrinho (1)" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Carrinho, 1 item" })).toBeVisible();
 });
 
 test("mostra erro visual no login inválido", async ({ page }) => {
@@ -166,7 +166,7 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("article").filter({ hasText: "Red Velvet" }).getByRole("button", { name: "Adicionar" }).click();
   await page.getByRole("article").filter({ hasText: "Red Velvet" }).getByRole("button", { name: "Adicionar" }).click();
-  await page.getByRole("link", { name: "Carrinho (2)" }).click();
+  await page.getByRole("link", { name: "Carrinho, 2 itens" }).click();
 
   await expect(page.getByRole("heading", { name: "Carrinho" })).toBeVisible();
   await expect(page.getByText(/Total:/)).toContainText("25,80");
@@ -181,7 +181,7 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
   await expect(page.getByRole("status")).toContainText("Cadastro realizado com sucesso.");
   await expect(page.getByRole("heading", { name: "Sabores pensados para adoçar o seu dia" })).toBeVisible();
 
-  await page.getByRole("link", { name: "Carrinho (2)" }).click();
+  await page.getByRole("link", { name: "Carrinho, 2 itens" }).click();
   await page.getByRole("link", { name: "Finalizar pedido" }).click();
   await page.getByLabel("CEP").fill("01001000");
   await expect(page.getByLabel("Rua")).toHaveValue("Rua das Flores");

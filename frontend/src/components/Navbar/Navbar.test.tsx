@@ -12,22 +12,29 @@ describe("Navbar", () => {
     expect(screen.getByRole("link", { name: /Doce Ninho/ })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Entrar" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Cadastrar" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Carrinho (0)" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Cardápio" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Carrinho, 0 itens" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /administrador/i })).not.toBeInTheDocument();
   });
 
   it("mostra o nome do usuário, pedidos e quantidade do carrinho", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<Navbar />, { user: loggedUser, cart: [cartItem] });
 
-    expect(await screen.findByText("Ana Cupcake")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Pedidos" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Carrinho (2)" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Ana Cupcake" })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "Meus pedidos" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Ana Cupcake" }));
+    expect(screen.getByRole("menuitem", { name: "Meus pedidos" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Carrinho, 2 itens" })).toBeInTheDocument();
   });
 
   it("mostra o painel só para o administrador", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<Navbar />, { user: adminUser });
 
-    expect(await screen.findByRole("link", { name: "Painel" })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "Painel" })).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: "Administrador" }));
+    expect(screen.getByRole("menuitem", { name: "Painel" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /novo administrador/i })).not.toBeInTheDocument();
   });
 
@@ -35,8 +42,8 @@ describe("Navbar", () => {
     const user = userEvent.setup();
     renderWithProviders(<Navbar />, { user: loggedUser });
 
-    await screen.findByText("Ana Cupcake");
-    await user.click(screen.getByRole("button", { name: "Sair" }));
+    await user.click(await screen.findByRole("button", { name: "Ana Cupcake" }));
+    await user.click(screen.getByRole("menuitem", { name: "Sair" }));
 
     expect(screen.getByRole("link", { name: "Entrar" })).toBeInTheDocument();
     expect(localStorage.getItem("cupcake-auth")).toBeNull();
