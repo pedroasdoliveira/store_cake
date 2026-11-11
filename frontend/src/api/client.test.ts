@@ -49,7 +49,7 @@ describe("api client", () => {
 
     const result = await api.login({ email: "ana@loja.com", password: "senha123" });
 
-    expect(result.userId).toBe(7);
+    expect(result.userId).toBe(loggedUser.userId);
     expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/auth/login",
       expect.objectContaining({

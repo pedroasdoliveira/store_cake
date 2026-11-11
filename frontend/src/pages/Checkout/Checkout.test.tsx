@@ -126,7 +126,7 @@ describe("Checkout", () => {
 
     expect(api.createOrder).toHaveBeenCalledWith(
       expect.objectContaining({
-        userId: 7,
+        userId: loggedUser.userId,
         street: "Praça da Sé",
         number: "100",
         city: "São Paulo",

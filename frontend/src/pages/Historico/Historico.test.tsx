@@ -24,6 +24,6 @@ describe("Historico", () => {
 
     expect(await screen.findByRole("heading", { name: "Pedido #42" })).toBeInTheDocument();
     expect(screen.getByText("2x Red Velvet — R$ 25,80")).toBeInTheDocument();
-    expect(api.listOrders).toHaveBeenCalledWith(7);
+    expect(api.listOrders).toHaveBeenCalledWith(loggedUser.userId);
   });
 });
