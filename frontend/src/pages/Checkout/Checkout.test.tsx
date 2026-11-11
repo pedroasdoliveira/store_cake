@@ -202,9 +202,16 @@ describe("Checkout", () => {
 
     await user.click(screen.getByRole("button", { name: "Pagar" }));
 
-    const payload = vi.mocked(api.createOrder).mock.calls[0][0] as { paymentMethod: string; cvv?: string };
+    const payload = vi.mocked(api.createOrder).mock.calls[0][0] as {
+      paymentMethod: string;
+      cvv?: string;
+      cardLast4?: string;
+      cardBrand?: string;
+    };
     expect(payload.paymentMethod).toBe("CARTAO");
     expect(payload.cvv).toBeUndefined();
+    expect(payload.cardLast4).toBe("1111");
+    expect(payload.cardBrand).toBe("Visa");
     expect(await screen.findByRole("heading", { name: "Pedido confirmado" })).toBeInTheDocument();
   });
 

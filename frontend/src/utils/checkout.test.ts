@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { checkoutSummary, isCardComplete, isExpiryValid, isLuhnValid, maskCardNumber, maskZipCode } from "./checkout";
+import {
+  cardBrand,
+  cardLastDigits,
+  checkoutSummary,
+  isCardComplete,
+  isExpiryValid,
+  isLuhnValid,
+  maskCardNumber,
+  maskZipCode,
+} from "./checkout";
 
 describe("checkout", () => {
   it("resume itens, entrega grátis e omite desconto quando não há", () => {
@@ -14,6 +23,12 @@ describe("checkout", () => {
   it("mascara CEP e número do cartão", () => {
     expect(maskZipCode("01001000")).toBe("01001-000");
     expect(maskCardNumber("4111111111111111")).toBe("4111 1111 1111 1111");
+  });
+
+  it("identifica a bandeira e os quatro últimos dígitos", () => {
+    expect(cardBrand("4111111111111111")).toBe("Visa");
+    expect(cardBrand("5555555555554444")).toBe("Mastercard");
+    expect(cardLastDigits("4111 1111 1111 1111")).toBe("1111");
   });
 
   it("aceita o cartão de teste e recusa número inválido", () => {

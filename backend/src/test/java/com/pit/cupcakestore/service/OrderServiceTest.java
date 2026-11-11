@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,6 +82,66 @@ class OrderServiceTest {
         assertEquals(new BigDecimal("10.00"), response.getItems().get(0).getUnitPrice());
         assertEquals("CONFIRMED", response.getStatus());
         assertEquals(1, response.getItems().size());
+        assertEquals("PIX", response.getPaymentMethod());
+        assertTrue(response.getTransactionCode().matches("[A-Z2-9]{10}"));
+        assertNull(response.getCardLast4());
+    }
+
+    @Test
+    void createShouldApproveACardAndKeepOnlyTheLastDigits() {
+        stubCatalog();
+        stubSave();
+        CreateOrderRequest request = paidRequest();
+        request.setPaymentMethod("cartao");
+        request.setCardBrand("Visa");
+        request.setCardLast4("1111");
+
+        OrderResponse response = orderService.create(request);
+
+        assertEquals("CARTAO", response.getPaymentMethod());
+        assertEquals("Visa", response.getCardBrand());
+        assertEquals("1111", response.getCardLast4());
+        assertEquals("APROVADO", response.getPaymentStatus());
+        assertNotNull(response.getTransactionCode());
+    }
+
+    @Test
+    void createShouldRefuseACardEndingIn0002() {
+        stubCatalog();
+        stubSave();
+        CreateOrderRequest request = paidRequest();
+        request.setPaymentMethod("CARTAO");
+        request.setCardBrand("Visa");
+        request.setCardLast4("0002");
+
+        OrderResponse response = orderService.create(request);
+
+        assertEquals("RECUSADO", response.getPaymentStatus());
+        assertEquals("0002", response.getCardLast4());
+    }
+
+    @Test
+    void createShouldRecordCashWithoutCardData() {
+        stubCatalog();
+        stubSave();
+        CreateOrderRequest request = paidRequest();
+        request.setPaymentMethod("DINHEIRO");
+
+        OrderResponse response = orderService.create(request);
+
+        assertEquals("DINHEIRO", response.getPaymentMethod());
+        assertNotNull(response.getTransactionCode());
+        assertNull(response.getPaymentStatus());
+        assertNull(response.getCardBrand());
+    }
+
+    @Test
+    void createShouldRejectACardWithoutTheLastDigits() {
+        stubCatalog();
+        CreateOrderRequest request = paidRequest();
+        request.setPaymentMethod("CARTAO");
+
+        assertThrows(BusinessException.class, () -> orderService.create(request));
     }
 
     @Test
@@ -227,6 +290,28 @@ class OrderServiceTest {
         when(userRepository.existsById(9L)).thenReturn(false);
 
         assertThrows(BusinessException.class, () -> orderService.listByUser(9L));
+    }
+
+    private void stubCatalog() {
+        User user = new User();
+        user.setId(1L);
+        Product product = new Product("Chocolate Belga", "Intenso", new BigDecimal("10.00"), "img", "Chocolate");
+        product.setId(3L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(productRepository.findById(3L)).thenReturn(Optional.of(product));
+    }
+
+    private void stubSave() {
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    }
+
+    private CreateOrderRequest paidRequest() {
+        CreateOrderRequest request = baseRequest();
+        OrderItemRequest item = new OrderItemRequest();
+        item.setProductId(3L);
+        item.setQuantity(1);
+        request.setItems(List.of(item));
+        return request;
     }
 
     private CreateOrderRequest baseRequest() {

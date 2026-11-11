@@ -43,6 +43,27 @@ const paymentLabels: Record<string, string> = {
   DINHEIRO: "Dinheiro na entrega",
 };
 
+export function cardLastDigits(number: string) {
+  return number.replace(/\D/g, "").slice(-4);
+}
+
+export function cardBrand(number: string) {
+  const digits = number.replace(/\D/g, "");
+  if (/^(4011|431274|438935|451416|457393|504175|5067|509|627780|636297|636368|650|6516|6550)/.test(digits)) {
+    return "Elo";
+  }
+  if (digits.startsWith("4")) {
+    return "Visa";
+  }
+  if (/^(5[1-5]|2[2-7])/.test(digits)) {
+    return "Mastercard";
+  }
+  if (/^3[47]/.test(digits)) {
+    return "American Express";
+  }
+  return "Elo";
+}
+
 export function paymentMethodLabel(method: string) {
   return paymentLabels[method] ?? method;
 }

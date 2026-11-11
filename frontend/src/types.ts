@@ -80,6 +80,10 @@ export interface Order {
   state: string;
   zipCode: string;
   paymentMethod: string;
+  transactionCode?: string;
+  paymentStatus?: string;
+  cardBrand?: string;
+  cardLast4?: string;
   status: string;
   subtotal?: number;
   discountAmount?: number;

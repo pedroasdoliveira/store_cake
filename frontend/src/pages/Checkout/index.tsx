@@ -21,6 +21,8 @@ import {
 } from "../../utils/addresses";
 import { BRAZIL_STATES, isBrazilState } from "../../utils/brazilStates";
 import {
+  cardBrand,
+  cardLastDigits,
   checkoutSummary,
   isCardComplete,
   paymentMethodLabel,
@@ -241,6 +243,9 @@ export function Checkout() {
         state: selectedAddress.state,
         zipCode: selectedAddress.zipCode,
         paymentMethod,
+        ...(paymentMethod === "CARTAO"
+          ? { cardBrand: cardBrand(card.number), cardLast4: cardLastDigits(card.number) }
+          : {}),
         ...(promotionId ? { promotionId: Number(promotionId) } : {}),
         items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
       });
@@ -252,8 +257,11 @@ export function Checkout() {
       }
       setConfirmation(order);
       setFeedback({
-        type: "success",
-        text: `Pedido #${order.id} confirmado. Total: ${formatCurrency(order.total)}.`,
+        type: order.paymentStatus === "RECUSADO" ? "error" : "success",
+        text:
+          order.paymentStatus === "RECUSADO"
+            ? `Pedido #${order.id} registrado, mas o cartão foi recusado.`
+            : `Pedido #${order.id} confirmado. Total: ${formatCurrency(order.total)}.`,
       });
     } catch (error) {
       setFeedback({
@@ -580,6 +588,7 @@ export function Checkout() {
             </li>
           ))}
         </ul>
+
         <dl className="checkout-totals">
           <div>
             <dt>Subtotal</dt>
@@ -594,6 +603,7 @@ export function Checkout() {
             <dd>{formatCurrency(summary.total)}</dd>
           </div>
         </dl>
+
         {promotions.length > 0 && (
           <label>
             Promoção
@@ -607,12 +617,14 @@ export function Checkout() {
             </select>
           </label>
         )}
+
         {selectedPromotion && (
           <p className="checkout-note">
             O desconto de {selectedPromotion.title} entra no total quando o pedido for confirmado.
           </p>
         )}
-        <form onSubmit={finishOrder}>
+
+        <form onSubmit={finishOrder} className="checkout-actions">
           <button type="submit" disabled={Boolean(blockReason) || submitting}>
             {submitting ? "Finalizando..." : "Pagar"}
           </button>

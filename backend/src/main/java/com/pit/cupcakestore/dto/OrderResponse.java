@@ -19,6 +19,10 @@ public class OrderResponse {
     private String state;
     private String zipCode;
     private String paymentMethod;
+    private String transactionCode;
+    private String paymentStatus;
+    private String cardBrand;
+    private String cardLast4;
     private String status;
     private BigDecimal subtotal;
     private BigDecimal discountAmount;
@@ -41,6 +45,10 @@ public class OrderResponse {
         response.state = order.getState();
         response.zipCode = order.getZipCode();
         response.paymentMethod = order.getPaymentMethod();
+        response.transactionCode = order.getTransactionCode();
+        response.paymentStatus = order.getPaymentStatus();
+        response.cardBrand = order.getCardBrand();
+        response.cardLast4 = order.getCardLast4();
         response.status = order.getStatus();
         response.subtotal = order.getSubtotal();
         response.discountAmount = order.getDiscountAmount();
@@ -94,6 +102,22 @@ public class OrderResponse {
 
     public String getPaymentMethod() {
         return paymentMethod;
+    }
+
+    public String getTransactionCode() {
+        return transactionCode;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public String getCardBrand() {
+        return cardBrand;
+    }
+
+    public String getCardLast4() {
+        return cardLast4;
     }
 
     public String getStatus() {

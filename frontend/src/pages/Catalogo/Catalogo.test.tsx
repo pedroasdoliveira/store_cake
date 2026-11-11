@@ -45,7 +45,7 @@ describe("Catalogo", () => {
 
     expect(screen.getByText("Carregando vitrine...")).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Red Velvet" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Clássicos" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Clássicos" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("img", { name: "Red Velvet" })).toHaveLength(2);
     expect(screen.getByText("Semana do chocolate")).toBeInTheDocument();
     expect(await screen.findByText("Contato: (11) 98888-0000")).toBeInTheDocument();
@@ -53,6 +53,7 @@ describe("Catalogo", () => {
 
     await user.click(screen.getByRole("button", { name: "Chocolate" }));
 
+    expect(screen.getByRole("heading", { name: "Chocolate" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Red Velvet" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Chocolate Belga" })).toBeInTheDocument();
 

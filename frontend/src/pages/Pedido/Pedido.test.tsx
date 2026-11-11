@@ -70,6 +70,64 @@ describe("Pedido", () => {
     expect(screen.getByText("Grátis")).toBeInTheDocument();
   });
 
+  it("mostra o QR e o código da transação do PIX", async () => {
+    vi.mocked(api.listOrders).mockResolvedValue([{ ...confirmedOrder, transactionCode: "U682SESA9H" }]);
+    renderPedido("/historico/42");
+
+    expect(await screen.findByRole("img", { name: "QR Code para pagamento PIX" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copiar código" })).toBeInTheDocument();
+    expect(screen.getByText("Código da transação: U682SESA9H")).toBeInTheDocument();
+  });
+
+  it("mostra o final do cartão aprovado", async () => {
+    vi.mocked(api.listOrders).mockResolvedValue([
+      {
+        ...confirmedOrder,
+        paymentMethod: "CARTAO",
+        cardBrand: "Visa",
+        cardLast4: "1111",
+        paymentStatus: "APROVADO",
+        transactionCode: "AB23CD45EF",
+      },
+    ]);
+    renderPedido("/historico/42");
+
+    expect(await screen.findByText("Visa •••• 1111")).toBeInTheDocument();
+    expect(screen.getByText("Aprovado")).toBeInTheDocument();
+    expect(screen.getByText("Código da transação: AB23CD45EF")).toBeInTheDocument();
+  });
+
+  it("mostra o cartão recusado", async () => {
+    vi.mocked(api.listOrders).mockResolvedValue([
+      {
+        ...confirmedOrder,
+        paymentMethod: "CARTAO",
+        cardBrand: "Visa",
+        cardLast4: "0002",
+        paymentStatus: "RECUSADO",
+        transactionCode: "RECUSADO02",
+      },
+    ]);
+    renderPedido("/historico/42");
+
+    expect(await screen.findByText("Visa •••• 0002")).toBeInTheDocument();
+    expect(screen.getByText("Recusado")).toBeInTheDocument();
+  });
+
+  it("mostra o dinheiro na entrega", async () => {
+    vi.mocked(api.listOrders).mockResolvedValue([
+      {
+        ...confirmedOrder,
+        paymentMethod: "DINHEIRO",
+        transactionCode: "DINHEIRO01",
+      },
+    ]);
+    renderPedido("/historico/42");
+
+    expect(await screen.findByText("O pagamento será feito em dinheiro na entrega.")).toBeInTheDocument();
+    expect(screen.getByText("Código da transação: DINHEIRO01")).toBeInTheDocument();
+  });
+
   it("explica o cancelamento sem a linha de entrega", async () => {
     vi.mocked(api.listOrders).mockResolvedValue([{ ...confirmedOrder, status: "CANCELED" }]);
     renderPedido("/historico/42");

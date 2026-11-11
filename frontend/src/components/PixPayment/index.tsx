@@ -22,9 +22,9 @@ export function PixPayment({ order, amount, onOpenHistory }: PixPaymentProps) {
       buildPixPayload({
         amount,
         city: order.city,
-        txid: `PED${order.id}T${codeId}`,
+        txid: order.transactionCode ?? `PED${order.id}T${codeId}`,
       }),
-    [amount, codeId, order.city, order.id]
+    [amount, codeId, order.city, order.id, order.transactionCode]
   );
 
   useEffect(() => {

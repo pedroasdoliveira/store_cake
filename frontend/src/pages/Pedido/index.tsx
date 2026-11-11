@@ -4,7 +4,7 @@ import { api } from "../../api/client";
 import { Feedback } from "../../components/Feedback";
 import { useAuth } from "../../context/AuthContext";
 import type { FeedbackMessage, Order } from "../../types";
-import { paymentMethodLabel } from "../../utils/checkout";
+import { PaymentProof } from "../../components/PaymentProof";
 import { formatCurrency } from "../../utils/money";
 import { customerOrderStatusLabel } from "../../utils/orderStatus";
 
@@ -187,7 +187,7 @@ export function Pedido() {
               </p>
               <p>CEP {order.zipCode}</p>
               {order.deliveryNote && <p>Observação: {order.deliveryNote}</p>}
-              <p>Pagamento: {paymentMethodLabel(order.paymentMethod)}</p>
+              <PaymentProof order={order} />
             </section>
           </div>
         </>

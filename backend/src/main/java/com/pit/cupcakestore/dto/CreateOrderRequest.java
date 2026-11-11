@@ -37,6 +37,10 @@ public class CreateOrderRequest {
     @NotBlank
     private String paymentMethod;
 
+    private String cardBrand;
+
+    private String cardLast4;
+
     private Long promotionId;
 
     @NotEmpty(message = "O pedido precisa ter ao menos um item")
@@ -113,6 +117,22 @@ public class CreateOrderRequest {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getCardBrand() {
+        return cardBrand;
+    }
+
+    public void setCardBrand(String cardBrand) {
+        this.cardBrand = cardBrand;
+    }
+
+    public String getCardLast4() {
+        return cardLast4;
+    }
+
+    public void setCardLast4(String cardLast4) {
+        this.cardLast4 = cardLast4;
     }
 
     public Long getPromotionId() {

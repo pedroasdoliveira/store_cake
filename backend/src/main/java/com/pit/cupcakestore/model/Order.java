@@ -53,6 +53,18 @@ public class Order {
     @Column(name = "payment_method", nullable = false, length = 40)
     private String paymentMethod;
 
+    @Column(name = "transaction_code", length = 12)
+    private String transactionCode;
+
+    @Column(name = "payment_status", length = 20)
+    private String paymentStatus;
+
+    @Column(name = "card_brand", length = 30)
+    private String cardBrand;
+
+    @Column(name = "card_last4", length = 4)
+    private String cardLast4;
+
     @Column(nullable = false, length = 40)
     private String status;
 
@@ -170,6 +182,38 @@ public class Order {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getTransactionCode() {
+        return transactionCode;
+    }
+
+    public void setTransactionCode(String transactionCode) {
+        this.transactionCode = transactionCode;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getCardBrand() {
+        return cardBrand;
+    }
+
+    public void setCardBrand(String cardBrand) {
+        this.cardBrand = cardBrand;
+    }
+
+    public String getCardLast4() {
+        return cardLast4;
+    }
+
+    public void setCardLast4(String cardLast4) {
+        this.cardLast4 = cardLast4;
     }
 
     public String getStatus() {

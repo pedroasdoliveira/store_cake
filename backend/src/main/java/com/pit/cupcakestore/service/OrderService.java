@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,11 @@ public class OrderService {
             "DELIVERED",
             "CANCELED"
     );
+    private static final Set<String> PAYMENT_METHODS = Set.of("PIX", "CARTAO", "DINHEIRO");
+    private static final Set<String> CARD_BRANDS = Set.of("Visa", "Mastercard", "Elo", "American Express");
+    private static final String TRANSACTION_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    private final SecureRandom random = new SecureRandom();
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -67,7 +73,6 @@ public class OrderService {
         order.setCity(request.getCity().trim());
         order.setState(request.getState().trim().toUpperCase());
         order.setZipCode(request.getZipCode().trim());
-        order.setPaymentMethod(request.getPaymentMethod());
         order.setStatus("CONFIRMED");
 
         BigDecimal total = BigDecimal.ZERO;
@@ -98,6 +103,7 @@ public class OrderService {
         }
         order.setDiscountAmount(discount);
         order.setTotal(total.subtract(discount));
+        applyPayment(order, request);
         Order saved = orderRepository.save(order);
         return OrderResponse.from(saved);
     }
@@ -140,6 +146,34 @@ public class OrderService {
         order.setZipCode(request.getZipCode().trim());
         order.setDeliveryNote(blankToNull(request.getDeliveryNote()));
         return OrderResponse.from(orderRepository.save(order));
+    }
+
+    private void applyPayment(Order order, CreateOrderRequest request) {
+        String method = request.getPaymentMethod().trim().toUpperCase();
+        if (!PAYMENT_METHODS.contains(method)) {
+            throw new BusinessException("Forma de pagamento inválida.");
+        }
+        order.setPaymentMethod(method);
+        order.setTransactionCode(newTransactionCode());
+        if (!"CARTAO".equals(method)) {
+            return;
+        }
+        String last4 = request.getCardLast4() == null ? "" : request.getCardLast4().trim();
+        String brand = request.getCardBrand() == null ? "" : request.getCardBrand().trim();
+        if (!last4.matches("\\d{4}") || !CARD_BRANDS.contains(brand)) {
+            throw new BusinessException("Informe os dados do cartão para finalizar a compra.");
+        }
+        order.setCardLast4(last4);
+        order.setCardBrand(brand);
+        order.setPaymentStatus("0002".equals(last4) ? "RECUSADO" : "APROVADO");
+    }
+
+    private String newTransactionCode() {
+        StringBuilder code = new StringBuilder(10);
+        for (int index = 0; index < 10; index += 1) {
+            code.append(TRANSACTION_ALPHABET.charAt(random.nextInt(TRANSACTION_ALPHABET.length())));
+        }
+        return code.toString();
     }
 
     private String blankToNull(String value) {

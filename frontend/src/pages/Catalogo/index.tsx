@@ -44,13 +44,7 @@ export function Catalogo() {
   const heroPhotos = products
     .filter((product) => product.imageUrl.trim() !== "" && !failedPhotoIds.includes(product.id))
     .slice(0, 3);
-  const sectionNames = category === "todos" ? categories.filter((item) => item !== "todos") : [category];
-  const sections = sectionNames
-    .map((name) => ({
-      name,
-      products: products.filter((product) => product.category === name),
-    }))
-    .filter((section) => category !== "todos" || section.products.length > 0);
+  const visible = products.filter((product) => category === "todos" || product.category === category);
 
   return (
     <section>
@@ -109,29 +103,42 @@ export function Catalogo() {
 
       {loading ? (
         <p>Carregando vitrine...</p>
-      ) : sections.length === 0 ? (
-        <p>Nenhum cupcake neste catálogo.</p>
-      ) : (
-        sections.map((section) => (
-          <section key={section.name} className="catalog-section" aria-labelledby={`catalog-${section.name}`}>
-            <h2 id={`catalog-${section.name}`}>{section.name}</h2>
-            {section.products.length === 0 ? (
-              <p>Nenhum cupcake neste catálogo.</p>
-            ) : (
-              <div className="grid">
-                {section.products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAdded={() =>
-                      setFeedback({ type: "success", text: `${product.name} adicionado ao carrinho.` })
-                    }
-                  />
-                ))}
-              </div>
-            )}
+      ) : visible.length === 0 ? (
+        category === "todos" ? (
+          <p>Nenhum cupcake neste catálogo.</p>
+        ) : (
+          <section className="catalog-section" aria-labelledby={`catalog-${category}`}>
+            <h2 id={`catalog-${category}`}>{category}</h2>
+            <p>Nenhum cupcake neste catálogo.</p>
           </section>
-        ))
+        )
+      ) : category === "todos" ? (
+        <div className="grid">
+          {visible.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAdded={() =>
+                setFeedback({ type: "success", text: `${product.name} adicionado ao carrinho.` })
+              }
+            />
+          ))}
+        </div>
+      ) : (
+        <section className="catalog-section" aria-labelledby={`catalog-${category}`}>
+          <h2 id={`catalog-${category}`}>{category}</h2>
+          <div className="grid">
+            {visible.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAdded={() =>
+                  setFeedback({ type: "success", text: `${product.name} adicionado ao carrinho.` })
+                }
+              />
+            ))}
+          </div>
+        </section>
       )}
     </section>
   );
