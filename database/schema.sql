@@ -17,6 +17,15 @@ CREATE TABLE IF NOT EXISTS products (
     discount_percent NUMERIC(5, 2) NOT NULL DEFAULT 0 CHECK (discount_percent >= 0 AND discount_percent <= 90)
 );
 
+CREATE TABLE IF NOT EXISTS store_settings (
+    id BIGSERIAL PRIMARY KEY,
+    store_name VARCHAR(120) NOT NULL,
+    headline VARCHAR(160) NOT NULL,
+    description TEXT NOT NULL,
+    phone VARCHAR(40) NOT NULL,
+    contact_email VARCHAR(160) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS categories (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(80) NOT NULL UNIQUE,

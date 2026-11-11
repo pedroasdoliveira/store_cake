@@ -6,6 +6,7 @@ import type {
   Promotion,
   SaveProductPayload,
   SavePromotionPayload,
+  StoreSettings,
   ZipCodeAddress,
 } from "../types";
 
@@ -42,6 +43,12 @@ function formatZipCode(digits: string) {
 }
 
 export const api = {
+  getStore: () => request<StoreSettings>("/api/store"),
+  updateStore: (adminUserId: number, payload: StoreSettings) =>
+    request<StoreSettings>(`/api/admin/store?adminUserId=${adminUserId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
   listCategories: () => request<Category[]>("/api/categories"),
   createCategory: (adminUserId: number, payload: { name: string; description: string }) =>
     request<Category>(`/api/categories?adminUserId=${adminUserId}`, {

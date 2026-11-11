@@ -1,10 +1,13 @@
 package com.pit.cupcakestore.config;
 
+import com.pit.cupcakestore.dto.StoreSettingsResponse;
 import com.pit.cupcakestore.model.Category;
 import com.pit.cupcakestore.model.Product;
+import com.pit.cupcakestore.model.StoreSettings;
 import com.pit.cupcakestore.model.User;
 import com.pit.cupcakestore.repository.CategoryRepository;
 import com.pit.cupcakestore.repository.ProductRepository;
+import com.pit.cupcakestore.repository.StoreSettingsRepository;
 import com.pit.cupcakestore.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,17 +25,20 @@ public class DataSeeder implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final StoreSettingsRepository storeSettingsRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataSeeder(
             ProductRepository productRepository,
             UserRepository userRepository,
             CategoryRepository categoryRepository,
+            StoreSettingsRepository storeSettingsRepository,
             PasswordEncoder passwordEncoder
     ) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.storeSettingsRepository = storeSettingsRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -40,6 +46,7 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) {
         seedAdmin();
         seedCategories();
+        seedStore();
         if (productRepository.count() > 0) {
             return;
         }
@@ -88,6 +95,20 @@ public class DataSeeder implements CommandLineRunner {
                         "Chocolate"
                 )
         ));
+    }
+
+    private void seedStore() {
+        if (storeSettingsRepository.count() > 0) {
+            return;
+        }
+        StoreSettingsResponse defaults = StoreSettingsResponse.defaults();
+        StoreSettings settings = new StoreSettings();
+        settings.setStoreName(defaults.getStoreName());
+        settings.setHeadline(defaults.getHeadline());
+        settings.setDescription(defaults.getDescription());
+        settings.setPhone(defaults.getPhone());
+        settings.setContactEmail(defaults.getContactEmail());
+        storeSettingsRepository.save(settings);
     }
 
     private void seedCategories() {

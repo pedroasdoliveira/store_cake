@@ -8,6 +8,13 @@ import { Catalogo } from "./Catalogo";
 vi.mock("../api/client", () => ({
   api: {
     listProducts: vi.fn(),
+    getStore: vi.fn().mockResolvedValue({
+      storeName: "Doce Ninho",
+      headline: "Sabores pensados para adoçar o seu dia",
+      description: "Escolha um cupcake, monte o carrinho e finalize o pedido com entrega em casa.",
+      phone: "(11) 98888-0000",
+      contactEmail: "contato@doceninho.com",
+    }),
     listPromotions: vi.fn().mockResolvedValue([
       {
         id: 5,
@@ -39,6 +46,7 @@ describe("Catalogo", () => {
     expect(screen.getByText("Carregando vitrine...")).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Red Velvet" })).toBeInTheDocument();
     expect(screen.getByText("Semana do chocolate")).toBeInTheDocument();
+    expect(await screen.findByText("Contato: (11) 98888-0000")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Chocolate Belga" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Chocolate" }));

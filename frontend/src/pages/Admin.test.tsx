@@ -17,6 +17,14 @@ vi.mock("../api/client", () => ({
     updatePromotion: vi.fn(),
     listAdminOrders: vi.fn().mockResolvedValue([]),
     updateOrder: vi.fn(),
+    getStore: vi.fn().mockResolvedValue({
+      storeName: "Doce Ninho",
+      headline: "Sabores pensados para adoçar o seu dia",
+      description: "Escolha um cupcake, monte o carrinho e finalize o pedido com entrega em casa.",
+      phone: "(11) 98888-0000",
+      contactEmail: "contato@doceninho.com",
+    }),
+    updateStore: vi.fn(),
   },
 }));
 
@@ -144,5 +152,32 @@ describe("Admin", () => {
       })
     );
     expect(await screen.findByRole("status")).toHaveTextContent("Pedido #42 atualizado.");
+  });
+
+  it("salva as configurações da loja virtual", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.updateStore).mockResolvedValue({
+      storeName: "Ninho Doce",
+      headline: "Cupcakes do fim de semana",
+      description: "Encomendas até sábado.",
+      phone: "(11) 97777-0000",
+      contactEmail: "contato@ninho.com",
+    });
+    renderWithProviders(<App />, { route: "/admin", user: adminUser });
+
+    await user.click(await screen.findByRole("button", { name: "Loja" }));
+    const name = await screen.findByLabelText("Nome da loja");
+    await user.clear(name);
+    await user.type(name, "Ninho Doce");
+    await user.click(screen.getByRole("button", { name: "Salvar loja" }));
+
+    expect(api.updateStore).toHaveBeenCalledWith(
+      1,
+      expect.objectContaining({
+        storeName: "Ninho Doce",
+        contactEmail: "contato@doceninho.com",
+      })
+    );
+    expect(await screen.findByRole("status")).toHaveTextContent("Configurações da loja salvas.");
   });
 });

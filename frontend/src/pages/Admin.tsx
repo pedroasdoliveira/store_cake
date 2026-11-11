@@ -3,8 +3,9 @@ import { CatalogManager } from "../components/admin/CatalogManager";
 import { OrderManager } from "../components/admin/OrderManager";
 import { ProductManager } from "../components/admin/ProductManager";
 import { PromotionManager } from "../components/admin/PromotionManager";
+import { StoreSettingsForm } from "../components/admin/StoreSettingsForm";
 
-type AdminSection = "catalogos" | "produtos" | "promocoes" | "pedidos";
+type AdminSection = "catalogos" | "produtos" | "promocoes" | "pedidos" | "loja";
 
 export function Admin() {
   const [section, setSection] = useState<AdminSection>("catalogos");
@@ -42,11 +43,19 @@ export function Admin() {
         >
           Pedidos
         </button>
+        <button
+          type="button"
+          className={section === "loja" ? "chip active" : "chip"}
+          onClick={() => setSection("loja")}
+        >
+          Loja
+        </button>
       </div>
       {section === "catalogos" && <CatalogManager />}
       {section === "produtos" && <ProductManager />}
       {section === "promocoes" && <PromotionManager />}
       {section === "pedidos" && <OrderManager />}
+      {section === "loja" && <StoreSettingsForm />}
     </section>
   );
 }

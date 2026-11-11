@@ -9,6 +9,14 @@ export interface Product {
   salePrice?: number;
 }
 
+export interface StoreSettings {
+  storeName: string;
+  headline: string;
+  description: string;
+  phone: string;
+  contactEmail: string;
+}
+
 export interface Category {
   id: number;
   name: string;

@@ -62,6 +62,18 @@ async function mockBackend(page: Page) {
     await route.fulfill({ json: [] });
   });
 
+  await page.route("**/api/store", async (route) => {
+    await route.fulfill({
+      json: {
+        storeName: "Doce Ninho",
+        headline: "Sabores pensados para adoçar o seu dia",
+        description: "Escolha um cupcake, monte o carrinho e finalize o pedido com entrega em casa.",
+        phone: "",
+        contactEmail: "contato@doceninho.com",
+      },
+    });
+  });
+
   await page.route("**/api/auth/register", async (route) => {
     await route.fulfill({
       status: 201,
