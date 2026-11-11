@@ -10,6 +10,7 @@ vi.mock("../api/client", () => ({
     createOrder: vi.fn(),
     lookupZipCode: vi.fn(),
     listOrders: vi.fn(),
+    listPromotions: vi.fn().mockResolvedValue([]),
   },
 }));
 
@@ -48,6 +49,8 @@ describe("Checkout", () => {
     vi.mocked(api.listOrders).mockResolvedValue([]);
     vi.mocked(api.lookupZipCode).mockReset();
     vi.mocked(api.createOrder).mockReset();
+    vi.mocked(api.listPromotions).mockReset();
+    vi.mocked(api.listPromotions).mockResolvedValue([]);
   });
 
   it("pede login quando o usuário não está autenticado", () => {
@@ -137,6 +140,37 @@ describe("Checkout", () => {
     expect(screen.getByRole("timer")).toHaveTextContent(/15:00|14:59/);
     expect(await screen.findByRole("img", { name: "QR Code para pagamento PIX" })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem("cupcake-cart") ?? "[]")).toEqual([]);
+  });
+
+  it("envia a promoção escolhida no pedido", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.listPromotions).mockResolvedValue([
+      {
+        id: 5,
+        title: "Semana do chocolate",
+        description: "Em qualquer pedido.",
+        discountPercent: 10,
+        active: true,
+      },
+    ]);
+    vi.mocked(api.createOrder).mockResolvedValue({
+      ...confirmedOrder,
+      promotionTitle: "Semana do chocolate",
+      subtotal: 25.8,
+      discountAmount: 2.58,
+      total: 23.22,
+    });
+    renderCheckout();
+
+    await user.selectOptions(await screen.findByLabelText("Promoção"), "5");
+    await saveAddress(user);
+    await user.click(screen.getByRole("button", { name: "Finalizar compra" }));
+
+    expect(api.createOrder).toHaveBeenCalledWith(
+      expect.objectContaining({
+        promotionId: 5,
+      })
+    );
   });
 
   it("anima o cartão conforme o preenchimento e confirma o pedido", async () => {

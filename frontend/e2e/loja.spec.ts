@@ -49,6 +49,19 @@ async function mockBackend(page: Page) {
     await route.fulfill({ json: products });
   });
 
+  await page.route("**/api/categories", async (route) => {
+    await route.fulfill({
+      json: [
+        { id: 1, name: "Clássicos", description: "Receitas de sempre da casa." },
+        { id: 2, name: "Chocolate", description: "Massas e coberturas de cacau." },
+      ],
+    });
+  });
+
+  await page.route("**/api/promotions", async (route) => {
+    await route.fulfill({ json: [] });
+  });
+
   await page.route("**/api/auth/register", async (route) => {
     await route.fulfill({
       status: 201,

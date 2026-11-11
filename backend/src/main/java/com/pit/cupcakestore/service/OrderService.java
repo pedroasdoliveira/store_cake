@@ -7,14 +7,17 @@ import com.pit.cupcakestore.exception.BusinessException;
 import com.pit.cupcakestore.model.Order;
 import com.pit.cupcakestore.model.OrderItem;
 import com.pit.cupcakestore.model.Product;
+import com.pit.cupcakestore.model.Promotion;
 import com.pit.cupcakestore.model.User;
 import com.pit.cupcakestore.repository.OrderRepository;
 import com.pit.cupcakestore.repository.ProductRepository;
+import com.pit.cupcakestore.repository.PromotionRepository;
 import com.pit.cupcakestore.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -23,15 +26,18 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final PromotionRepository promotionRepository;
 
     public OrderService(
             OrderRepository orderRepository,
             UserRepository userRepository,
-            ProductRepository productRepository
+            ProductRepository productRepository,
+            PromotionRepository promotionRepository
     ) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.promotionRepository = promotionRepository;
     }
 
     @Transactional
@@ -65,7 +71,20 @@ public class OrderService {
             total = total.add(product.salePrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())));
         }
 
-        order.setTotal(total);
+        order.setSubtotal(total);
+        BigDecimal discount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        if (request.getPromotionId() != null) {
+            Promotion promotion = promotionRepository.findById(request.getPromotionId())
+                    .orElseThrow(() -> new BusinessException("Promoção não encontrada."));
+            if (!promotion.isActive()) {
+                throw new BusinessException("Esta promoção não está ativa.");
+            }
+            discount = total.multiply(promotion.getDiscountPercent())
+                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+            order.setPromotionTitle(promotion.getTitle());
+        }
+        order.setDiscountAmount(discount);
+        order.setTotal(total.subtract(discount));
         Order saved = orderRepository.save(order);
         return OrderResponse.from(saved);
     }

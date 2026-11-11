@@ -15,6 +15,21 @@ export interface Category {
   description?: string;
 }
 
+export interface Promotion {
+  id: number;
+  title: string;
+  description: string;
+  discountPercent: number;
+  active: boolean;
+}
+
+export interface SavePromotionPayload {
+  title: string;
+  description: string;
+  discountPercent: number;
+  active: boolean;
+}
+
 export interface SaveProductPayload {
   name: string;
   description: string;
@@ -57,6 +72,9 @@ export interface Order {
   zipCode: string;
   paymentMethod: string;
   status: string;
+  subtotal?: number;
+  discountAmount?: number;
+  promotionTitle?: string;
   total: number;
   createdAt: string;
   items: OrderItem[];

@@ -37,6 +37,8 @@ public class CreateOrderRequest {
     @NotBlank
     private String paymentMethod;
 
+    private Long promotionId;
+
     @NotEmpty(message = "O pedido precisa ter ao menos um item")
     @Valid
     private List<OrderItemRequest> items;
@@ -111,6 +113,14 @@ public class CreateOrderRequest {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public Long getPromotionId() {
+        return promotionId;
+    }
+
+    public void setPromotionId(Long promotionId) {
+        this.promotionId = promotionId;
     }
 
     public List<OrderItemRequest> getItems() {

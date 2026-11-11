@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import { Feedback } from "../components/Feedback";
 import { ProductCard } from "../components/ProductCard";
-import type { Category, FeedbackMessage, Product } from "../types";
+import type { Category, FeedbackMessage, Product, Promotion } from "../types";
 
 export function Catalogo() {
   const [products, setProducts] = useState<Product[]>([]);
   const [catalogs, setCatalogs] = useState<Category[]>([]);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [category, setCategory] = useState("todos");
   const [feedback, setFeedback] = useState<FeedbackMessage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,7 @@ export function Catalogo() {
       .catch((error: Error) => setFeedback({ type: "error", text: error.message }))
       .finally(() => setLoading(false));
     api.listCategories().then(setCatalogs).catch(() => setCatalogs([]));
+    api.listPromotions().then(setPromotions).catch(() => setPromotions([]));
   }, []);
 
   const categories = useMemo(() => {
@@ -43,6 +45,19 @@ export function Catalogo() {
       </div>
 
       <Feedback message={feedback} />
+
+      {promotions.length > 0 && (
+        <div className="promo-list">
+          {promotions.map((promotion) => (
+            <article key={promotion.id} className="promo-card">
+              <strong>{promotion.title}</strong>
+              <p>
+                {promotion.description} Use no pedido e ganhe {promotion.discountPercent}% .
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
 
       <div className="filters">
         {categories.map((item) => (

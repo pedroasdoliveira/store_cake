@@ -60,6 +60,12 @@ export function Historico() {
                 </li>
               ))}
             </ul>
+            {order.promotionTitle && (
+              <p>
+                Promoção: {order.promotionTitle}
+                {order.discountAmount ? ` (− ${formatCurrency(order.discountAmount)})` : ""}
+              </p>
+            )}
             <strong>Total: {formatCurrency(order.total)}</strong>
           </article>
         ))}

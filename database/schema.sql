@@ -35,8 +35,19 @@ CREATE TABLE IF NOT EXISTS orders (
     zip_code VARCHAR(12) NOT NULL,
     payment_method VARCHAR(40) NOT NULL,
     status VARCHAR(40) NOT NULL DEFAULT 'CONFIRMED',
+    subtotal NUMERIC(10, 2),
+    discount_amount NUMERIC(10, 2),
+    promotion_title VARCHAR(120),
     total NUMERIC(10, 2) NOT NULL CHECK (total >= 0),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS promotions (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(120) NOT NULL,
+    description TEXT NOT NULL,
+    discount_percent NUMERIC(5, 2) NOT NULL CHECK (discount_percent >= 1 AND discount_percent <= 90),
+    active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS order_items (

@@ -194,6 +194,22 @@ button {
   margin-top: 16px;
 }
 
+.promo-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.promo-card {
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.promo-card p {
+  margin: 6px 0 0;
+}
+
 .admin-card {
   border: 1px solid var(--cream);
   border-radius: 16px;
@@ -226,6 +242,12 @@ label {
   display: grid;
   gap: 6px;
   font-weight: 600;
+}
+
+.check-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 input,

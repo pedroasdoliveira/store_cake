@@ -6,7 +6,7 @@ import { Feedback } from "../components/Feedback";
 import { PixPayment } from "../components/PixPayment";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-import type { DeliveryAddress, FeedbackMessage, Order } from "../types";
+import type { DeliveryAddress, FeedbackMessage, Order, Promotion } from "../types";
 import {
   addressFromOrder,
   createAddressId,
@@ -46,6 +46,8 @@ export function Checkout() {
   const [pixAmount, setPixAmount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("PIX");
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [promotionId, setPromotionId] = useState("");
   const [card, setCard] = useState<CardDraft>(emptyCard);
   const [cardFocus, setCardFocus] = useState<CardField | null>(null);
   const [localBook, setLocalBook] = useState<AddressBook>(emptyAddressBook);
@@ -56,6 +58,10 @@ export function Checkout() {
   const [addressForm, setAddressForm] = useState<AddressDraft>(emptyAddressDraft);
   const [zipLoading, setZipLoading] = useState(false);
   const zipRequest = useRef(0);
+
+  useEffect(() => {
+    api.listPromotions().then(setPromotions).catch(() => setPromotions([]));
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -226,6 +232,7 @@ export function Checkout() {
         state: selectedAddress.state,
         zipCode: selectedAddress.zipCode,
         paymentMethod,
+        ...(promotionId ? { promotionId: Number(promotionId) } : {}),
         items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
       });
       const amount = summary.total;
@@ -485,6 +492,19 @@ export function Checkout() {
           </div>
         </dl>
         <form onSubmit={finishOrder} className="form">
+          {promotions.length > 0 && (
+            <label>
+              Promoção
+              <select value={promotionId} onChange={(event) => setPromotionId(event.target.value)}>
+                <option value="">Nenhuma</option>
+                {promotions.map((promotion) => (
+                  <option key={promotion.id} value={promotion.id}>
+                    {promotion.title} ({promotion.discountPercent}%)
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <label>
             Pagamento
             <select

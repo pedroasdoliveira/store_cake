@@ -56,6 +56,15 @@ public class Order {
     @Column(nullable = false, length = 40)
     private String status;
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal subtotal;
+
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    private BigDecimal discountAmount;
+
+    @Column(name = "promotion_title", length = 120)
+    private String promotionTitle;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
@@ -166,6 +175,30 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public String getPromotionTitle() {
+        return promotionTitle;
+    }
+
+    public void setPromotionTitle(String promotionTitle) {
+        this.promotionTitle = promotionTitle;
     }
 
     public BigDecimal getTotal() {

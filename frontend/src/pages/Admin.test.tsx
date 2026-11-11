@@ -12,6 +12,9 @@ vi.mock("../api/client", () => ({
     listProducts: vi.fn(),
     createProduct: vi.fn(),
     updateProduct: vi.fn(),
+    listAdminPromotions: vi.fn().mockResolvedValue([]),
+    createPromotion: vi.fn(),
+    updatePromotion: vi.fn(),
   },
 }));
 
@@ -81,5 +84,30 @@ describe("Admin", () => {
       })
     );
     expect(await screen.findByRole("status")).toHaveTextContent("Produto atualizado.");
+  });
+
+  it("publica uma promoção para a página inicial", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.createPromotion).mockResolvedValue({
+      id: 5,
+      title: "Semana do chocolate",
+      description: "Em qualquer pedido.",
+      discountPercent: 10,
+      active: true,
+    });
+    renderWithProviders(<App />, { route: "/admin", user: adminUser });
+
+    await user.click(await screen.findByRole("button", { name: "Promoções" }));
+    await user.type(screen.getByLabelText("Título"), "Semana do chocolate");
+    await user.type(screen.getByLabelText("Descrição"), "Em qualquer pedido.");
+    await user.click(screen.getByRole("button", { name: "Publicar promoção" }));
+
+    expect(api.createPromotion).toHaveBeenCalledWith(1, {
+      title: "Semana do chocolate",
+      description: "Em qualquer pedido.",
+      discountPercent: 10,
+      active: true,
+    });
+    expect(await screen.findByRole("status")).toHaveTextContent("Promoção publicada na página inicial.");
   });
 });

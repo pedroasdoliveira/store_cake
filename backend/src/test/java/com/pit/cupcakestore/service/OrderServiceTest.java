@@ -6,9 +6,11 @@ import com.pit.cupcakestore.dto.OrderResponse;
 import com.pit.cupcakestore.exception.BusinessException;
 import com.pit.cupcakestore.model.Order;
 import com.pit.cupcakestore.model.Product;
+import com.pit.cupcakestore.model.Promotion;
 import com.pit.cupcakestore.model.User;
 import com.pit.cupcakestore.repository.OrderRepository;
 import com.pit.cupcakestore.repository.ProductRepository;
+import com.pit.cupcakestore.repository.PromotionRepository;
 import com.pit.cupcakestore.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +38,9 @@ class OrderServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private PromotionRepository promotionRepository;
 
     @InjectMocks
     private OrderService orderService;
@@ -93,6 +98,61 @@ class OrderServiceTest {
 
         assertEquals(new BigDecimal("9.00"), response.getItems().get(0).getUnitPrice());
         assertEquals(new BigDecimal("18.00"), response.getTotal());
+    }
+
+    @Test
+    void createShouldApplyAnActivePromotionToTheOrder() {
+        User user = new User();
+        user.setId(1L);
+        Product product = new Product("Chocolate Belga", "Intenso", new BigDecimal("10.00"), "img", "Chocolate");
+        product.setId(3L);
+        Promotion promotion = new Promotion();
+        promotion.setId(5L);
+        promotion.setTitle("Semana do chocolate");
+        promotion.setDiscountPercent(new BigDecimal("10"));
+        promotion.setActive(true);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(productRepository.findById(3L)).thenReturn(Optional.of(product));
+        when(promotionRepository.findById(5L)).thenReturn(Optional.of(promotion));
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CreateOrderRequest request = baseRequest();
+        request.setPromotionId(5L);
+        OrderItemRequest item = new OrderItemRequest();
+        item.setProductId(3L);
+        item.setQuantity(2);
+        request.setItems(List.of(item));
+
+        OrderResponse response = orderService.create(request);
+
+        assertEquals(new BigDecimal("20.00"), response.getSubtotal());
+        assertEquals(new BigDecimal("2.00"), response.getDiscountAmount());
+        assertEquals(new BigDecimal("18.00"), response.getTotal());
+        assertEquals("Semana do chocolate", response.getPromotionTitle());
+    }
+
+    @Test
+    void createShouldRejectInactivePromotion() {
+        User user = new User();
+        user.setId(1L);
+        Product product = new Product("Chocolate Belga", "Intenso", new BigDecimal("10.00"), "img", "Chocolate");
+        product.setId(3L);
+        Promotion promotion = new Promotion();
+        promotion.setActive(false);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(productRepository.findById(3L)).thenReturn(Optional.of(product));
+        when(promotionRepository.findById(5L)).thenReturn(Optional.of(promotion));
+
+        CreateOrderRequest request = baseRequest();
+        request.setPromotionId(5L);
+        OrderItemRequest item = new OrderItemRequest();
+        item.setProductId(3L);
+        item.setQuantity(1);
+        request.setItems(List.of(item));
+
+        assertThrows(BusinessException.class, () -> orderService.create(request));
     }
 
     @Test

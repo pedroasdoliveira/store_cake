@@ -19,6 +19,9 @@ public class OrderResponse {
     private String zipCode;
     private String paymentMethod;
     private String status;
+    private BigDecimal subtotal;
+    private BigDecimal discountAmount;
+    private String promotionTitle;
     private BigDecimal total;
     private LocalDateTime createdAt;
     private List<OrderItemResponse> items;
@@ -36,6 +39,9 @@ public class OrderResponse {
         response.zipCode = order.getZipCode();
         response.paymentMethod = order.getPaymentMethod();
         response.status = order.getStatus();
+        response.subtotal = order.getSubtotal();
+        response.discountAmount = order.getDiscountAmount();
+        response.promotionTitle = order.getPromotionTitle();
         response.total = order.getTotal();
         response.createdAt = order.getCreatedAt();
         response.items = order.getItems().stream().map(OrderItemResponse::from).toList();
@@ -84,6 +90,18 @@ public class OrderResponse {
 
     public String getStatus() {
         return status;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public String getPromotionTitle() {
+        return promotionTitle;
     }
 
     public BigDecimal getTotal() {

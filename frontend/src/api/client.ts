@@ -1,4 +1,13 @@
-import type { AuthUser, Category, Order, Product, SaveProductPayload, ZipCodeAddress } from "../types";
+import type {
+  AuthUser,
+  Category,
+  Order,
+  Product,
+  Promotion,
+  SaveProductPayload,
+  SavePromotionPayload,
+  ZipCodeAddress,
+} from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
@@ -74,6 +83,19 @@ export const api = {
       body: JSON.stringify(payload),
     }),
   listOrders: (userId: number) => request<Order[]>(`/api/orders?userId=${userId}`),
+  listPromotions: () => request<Promotion[]>("/api/promotions"),
+  listAdminPromotions: (adminUserId: number) =>
+    request<Promotion[]>(`/api/admin/promotions?adminUserId=${adminUserId}`),
+  createPromotion: (adminUserId: number, payload: SavePromotionPayload) =>
+    request<Promotion>(`/api/admin/promotions?adminUserId=${adminUserId}`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  updatePromotion: (adminUserId: number, promotionId: number, payload: SavePromotionPayload) =>
+    request<Promotion>(`/api/admin/promotions/${promotionId}?adminUserId=${adminUserId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
   lookupZipCode: async (zipCode: string): Promise<ZipCodeAddress> => {
     const digits = zipCode.replace(/\D/g, "");
     if (digits.length !== 8) {
