@@ -20,6 +20,7 @@ export function Catalogo() {
   const [category, setCategory] = useState("todos");
   const [feedback, setFeedback] = useState<FeedbackMessage | null>(null);
   const [loading, setLoading] = useState(true);
+  const [failedPhotoIds, setFailedPhotoIds] = useState<number[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -40,7 +41,9 @@ export function Catalogo() {
     return ["todos", ...unique];
   }, [catalogs, products]);
 
-  const heroPhotos = products.filter((product) => product.imageUrl.trim() !== "").slice(0, 3);
+  const heroPhotos = products
+    .filter((product) => product.imageUrl.trim() !== "" && !failedPhotoIds.includes(product.id))
+    .slice(0, 3);
   const sectionNames = category === "todos" ? categories.filter((item) => item !== "todos") : [category];
   const sections = sectionNames
     .map((name) => ({
@@ -61,7 +64,16 @@ export function Catalogo() {
         {heroPhotos.length > 0 && (
           <div className="hero-photos">
             {heroPhotos.map((product) => (
-              <img key={product.id} src={product.imageUrl} alt={product.name} />
+              <img
+                key={product.id}
+                src={product.imageUrl}
+                alt={product.name}
+                onError={() =>
+                  setFailedPhotoIds((current) =>
+                    current.includes(product.id) ? current : [...current, product.id]
+                  )
+                }
+              />
             ))}
           </div>
         )}

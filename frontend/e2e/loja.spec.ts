@@ -199,4 +199,15 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
   await page.getByRole("button", { name: "Ver meus pedidos" }).click();
   await expect(page.getByRole("heading", { name: "Pedido #42" })).toBeVisible();
   await expect(page.getByText("2 cupcakes")).toBeVisible();
+  await expect(page.getByText("Seu pedido #42 foi recebido.")).toBeVisible();
+
+  await page.getByRole("link", { name: "Detalhes" }).click();
+  await expect(page).toHaveURL(/\/historico\/42$/);
+  await expect(page.getByRole("listitem").filter({ hasText: "Pedido recebido" })).toHaveAttribute(
+    "aria-current",
+    "step"
+  );
+  await expect(page.getByText("2× Red Velvet")).toBeVisible();
+  await expect(page.getByText("Pagamento: PIX")).toBeVisible();
+  await expect(page.getByText("Grátis")).toBeVisible();
 });
