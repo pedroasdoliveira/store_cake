@@ -19,9 +19,6 @@ import java.util.List;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
-    static final String ADMIN_EMAIL = "admin@doceninho.com";
-    static final String ADMIN_PASSWORD = "admin123";
-
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
@@ -44,7 +41,7 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        seedAdmin();
+        seedUsers();
         seedCategories();
         seedStore();
         if (productRepository.count() > 0) {
@@ -127,15 +124,17 @@ public class DataSeeder implements CommandLineRunner {
         categoryRepository.save(category);
     }
 
-    private void seedAdmin() {
-        if (userRepository.existsByEmailIgnoreCase(ADMIN_EMAIL)) {
-            return;
+    private void seedUsers() {
+        for (DemoAccounts.Account account : DemoAccounts.all()) {
+            if (userRepository.existsByEmailIgnoreCase(account.getEmail())) {
+                continue;
+            }
+            User user = new User();
+            user.setName(account.getName());
+            user.setEmail(account.getEmail());
+            user.setPassword(passwordEncoder.encode(account.getPassword()));
+            user.setRole(account.getRole());
+            userRepository.save(user);
         }
-        User admin = new User();
-        admin.setName("Administrador");
-        admin.setEmail(ADMIN_EMAIL);
-        admin.setPassword(passwordEncoder.encode(ADMIN_PASSWORD));
-        admin.setRole("ADMIN");
-        userRepository.save(admin);
     }
 }

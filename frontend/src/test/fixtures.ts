@@ -20,19 +20,45 @@ export const chocolate: Product = {
 
 export const cartItem: CartItem = { ...redVelvet, quantity: 2 };
 
-export const loggedUser: AuthUser = {
-  userId: 7,
-  name: "Ana Cupcake",
-  email: "ana@loja.com",
-  role: "CUSTOMER",
-};
+export interface DemoAccount extends AuthUser {
+  password: string;
+}
 
-export const adminUser: AuthUser = {
+export const adminUser: DemoAccount = {
   userId: 1,
   name: "Administrador",
   email: "admin@doceninho.com",
   role: "ADMIN",
+  password: "admin123",
 };
+
+export const anaUser: DemoAccount = {
+  userId: 2,
+  name: "Ana Cupcake",
+  email: "ana@loja.com",
+  role: "CUSTOMER",
+  password: "cliente123",
+};
+
+export const brunoUser: DemoAccount = {
+  userId: 3,
+  name: "Bruno Ninho",
+  email: "bruno@loja.com",
+  role: "CUSTOMER",
+  password: "cliente123",
+};
+
+export const claraUser: DemoAccount = {
+  userId: 4,
+  name: "Clara Doce",
+  email: "clara@loja.com",
+  role: "CUSTOMER",
+  password: "cliente123",
+};
+
+export const demoCustomers: DemoAccount[] = [anaUser, brunoUser, claraUser];
+
+export const loggedUser: AuthUser = anaUser;
 
 export const confirmedOrder: Order = {
   id: 42,

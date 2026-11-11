@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { loggedUser } from "../../test/fixtures";
+import { adminUser, anaUser } from "../../test/fixtures";
 import { renderWithProviders } from "../../test/render";
 import { Login } from ".";
 
@@ -17,17 +17,17 @@ describe("Login", () => {
   it("autentica e mostra mensagem de sucesso", async () => {
     const user = userEvent.setup();
     vi.mocked(api.login).mockResolvedValue({
-      ...loggedUser,
+      ...anaUser,
       message: "Login realizado com sucesso.",
     });
 
     renderWithProviders(<Login />, { route: "/login" });
 
-    await user.type(screen.getByLabelText("E-mail"), "ana@loja.com");
-    await user.type(screen.getByLabelText("Senha"), "senha123");
+    await user.type(screen.getByLabelText("E-mail"), anaUser.email);
+    await user.type(screen.getByLabelText("Senha"), anaUser.password);
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
-    expect(api.login).toHaveBeenCalledWith({ email: "ana@loja.com", password: "senha123" });
+    expect(api.login).toHaveBeenCalledWith({ email: anaUser.email, password: anaUser.password });
     expect(await screen.findByRole("status")).toHaveTextContent("Login realizado com sucesso.");
     expect(JSON.parse(localStorage.getItem("cupcake-auth") ?? "{}")).toMatchObject({
       email: "ana@loja.com",
@@ -38,16 +38,13 @@ describe("Login", () => {
   it("guarda a sessão de administrador", async () => {
     const user = userEvent.setup();
     vi.mocked(api.login).mockResolvedValue({
-      userId: 1,
-      name: "Administrador",
-      email: "admin@doceninho.com",
-      role: "ADMIN",
+      ...adminUser,
       message: "Login realizado com sucesso.",
     });
 
     renderWithProviders(<Login />, { route: "/login" });
-    await user.type(screen.getByLabelText("E-mail"), "admin@doceninho.com");
-    await user.type(screen.getByLabelText("Senha"), "admin123");
+    await user.type(screen.getByLabelText("E-mail"), adminUser.email);
+    await user.type(screen.getByLabelText("Senha"), adminUser.password);
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("Login realizado com sucesso.");

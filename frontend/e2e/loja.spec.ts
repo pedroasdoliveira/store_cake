@@ -86,9 +86,17 @@ async function mockBackend(page: Page) {
     });
   });
 
+  const demoUsers = [
+    { userId: 1, name: "Administrador", email: "admin@doceninho.com", role: "ADMIN", password: "admin123" },
+    { userId: 2, name: "Ana Cupcake", email: "ana@loja.com", role: "CUSTOMER", password: "cliente123" },
+    { userId: 3, name: "Bruno Ninho", email: "bruno@loja.com", role: "CUSTOMER", password: "cliente123" },
+    { userId: 4, name: "Clara Doce", email: "clara@loja.com", role: "CUSTOMER", password: "cliente123" },
+  ];
+
   await page.route("**/api/auth/login", async (route) => {
     const payload = route.request().postDataJSON() as { email: string; password: string };
-    if (payload.password === "errada") {
+    const account = demoUsers.find((user) => user.email === payload.email && user.password === payload.password);
+    if (!account || payload.password === "errada") {
       await route.fulfill({
         status: 400,
         json: { message: "E-mail ou senha inválidos." },
@@ -97,9 +105,10 @@ async function mockBackend(page: Page) {
     }
     await route.fulfill({
       json: {
-        userId: 7,
-        name: "Ana Cupcake",
-        email: payload.email,
+        userId: account.userId,
+        name: account.name,
+        email: account.email,
+        role: account.role,
         message: "Login realizado com sucesso.",
       },
     });

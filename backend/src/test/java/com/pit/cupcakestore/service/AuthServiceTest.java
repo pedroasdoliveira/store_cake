@@ -1,10 +1,12 @@
 package com.pit.cupcakestore.service;
 
+import com.pit.cupcakestore.config.DemoAccounts;
 import com.pit.cupcakestore.dto.AuthResponse;
 import com.pit.cupcakestore.dto.LoginRequest;
 import com.pit.cupcakestore.dto.RegisterAdminRequest;
 import com.pit.cupcakestore.dto.RegisterRequest;
 import com.pit.cupcakestore.exception.BusinessException;
+import com.pit.cupcakestore.fixture.DemoUsers;
 import com.pit.cupcakestore.model.User;
 import com.pit.cupcakestore.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,19 +48,19 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         registerRequest = new RegisterRequest();
-        registerRequest.setName("Ana Cupcake");
-        registerRequest.setEmail("ana@loja.com");
-        registerRequest.setPassword("senha123");
+        registerRequest.setName(DemoAccounts.ANA.getName());
+        registerRequest.setEmail(DemoAccounts.ANA.getEmail());
+        registerRequest.setPassword(DemoAccounts.ANA.getPassword());
 
         loginRequest = new LoginRequest();
-        loginRequest.setEmail("ana@loja.com");
-        loginRequest.setPassword("senha123");
+        loginRequest.setEmail(DemoAccounts.ADMIN.getEmail());
+        loginRequest.setPassword(DemoAccounts.ADMIN.getPassword());
     }
 
     @Test
     void registerShouldPersistHashedPassword() {
-        when(userRepository.existsByEmailIgnoreCase("ana@loja.com")).thenReturn(false);
-        when(passwordEncoder.encode("senha123")).thenReturn("hash");
+        when(userRepository.existsByEmailIgnoreCase(DemoAccounts.ANA.getEmail())).thenReturn(false);
+        when(passwordEncoder.encode(DemoAccounts.ANA.getPassword())).thenReturn("hash");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);
             user.setId(1L);
@@ -71,14 +73,14 @@ class AuthServiceTest {
         verify(userRepository).save(captor.capture());
         assertEquals("hash", captor.getValue().getPassword());
         assertEquals("CUSTOMER", captor.getValue().getRole());
-        assertEquals("ana@loja.com", response.getEmail());
+        assertEquals(DemoAccounts.ANA.getEmail(), response.getEmail());
         assertEquals("CUSTOMER", response.getRole());
         assertEquals("Cadastro realizado com sucesso.", response.getMessage());
     }
 
     @Test
     void registerShouldRejectDuplicatedEmail() {
-        when(userRepository.existsByEmailIgnoreCase("ana@loja.com")).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(DemoAccounts.ANA.getEmail())).thenReturn(true);
 
         assertThrows(BusinessException.class, () -> authService.register(registerRequest));
         verify(userRepository, never()).save(any());
@@ -86,29 +88,22 @@ class AuthServiceTest {
 
     @Test
     void loginShouldSucceedWithValidCredentials() {
-        User user = new User();
-        user.setId(7L);
-        user.setName("Ana Cupcake");
-        user.setEmail("ana@loja.com");
-        user.setPassword("hash");
-        user.setRole("ADMIN");
+        User user = DemoUsers.admin();
 
-        when(userRepository.findByEmailIgnoreCase("ana@loja.com")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("senha123", "hash")).thenReturn(true);
+        when(userRepository.findByEmailIgnoreCase(DemoAccounts.ADMIN.getEmail())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(DemoAccounts.ADMIN.getPassword(), "hash")).thenReturn(true);
 
         AuthResponse response = authService.login(loginRequest);
 
-        assertEquals(7L, response.getUserId());
+        assertEquals(1L, response.getUserId());
         assertEquals("ADMIN", response.getRole());
         assertEquals("Login realizado com sucesso.", response.getMessage());
     }
 
     @Test
     void loginShouldFailWithWrongPassword() {
-        User user = new User();
-        user.setPassword("hash");
-        when(userRepository.findByEmailIgnoreCase("ana@loja.com")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("senha123", "hash")).thenReturn(false);
+        when(userRepository.findByEmailIgnoreCase(DemoAccounts.ADMIN.getEmail())).thenReturn(Optional.of(DemoUsers.admin()));
+        when(passwordEncoder.matches(DemoAccounts.ADMIN.getPassword(), "hash")).thenReturn(false);
 
         assertThrows(BusinessException.class, () -> authService.login(loginRequest));
     }

@@ -63,7 +63,7 @@ cd backend
 
 A API fica em `http://localhost:8080`.
 
-Na primeira execução, o `DataSeeder` cadastra 6 cupcakes se a tabela `products` estiver vazia.
+Na primeira execução, o `DataSeeder` cadastra o administrador, três clientes de teste e 6 cupcakes se a tabela `products` estiver vazia.
 
 ### Endpoints
 
@@ -127,3 +127,12 @@ Os testes E2E sobem o Vite e simulam a API REST, então não dependem do Java ne
 3. Finalize o pedido em **Checkout** informando endereço e forma de pagamento.
 4. Confira o número do pedido e o valor total.
 5. Consulte os pedidos em **Pedidos**.
+
+Contas criadas pelo seed:
+
+| Papel | Nome | E-mail | Senha |
+| --- | --- | --- | --- |
+| Administrador | Administrador | `admin@doceninho.com` | `admin123` |
+| Cliente | Ana Cupcake | `ana@loja.com` | `cliente123` |
+| Cliente | Bruno Ninho | `bruno@loja.com` | `cliente123` |
+| Cliente | Clara Doce | `clara@loja.com` | `cliente123` |
