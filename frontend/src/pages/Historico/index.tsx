@@ -77,15 +77,17 @@ export function Historico() {
   }
 
   return (
-    <section className="panel">
+    <section>
       <h1>Meus pedidos</h1>
       <Feedback message={feedback} />
       {loading && <p>Carregando pedidos...</p>}
       {!loading && orders.length === 0 && <p>Você ainda não realizou pedidos.</p>}
       {activeOrder && activeMessage && (
         <p className="order-banner">
-          {activeMessage}{" "}
-          <Link to={`/historico/${activeOrder.id}`}>Acompanhar pedido</Link>
+          <span>{activeMessage}</span>
+          <Link to={`/historico/${activeOrder.id}`} className="button-link">
+            Acompanhar pedido
+          </Link>
         </p>
       )}
       <div className="order-list">
@@ -101,7 +103,7 @@ export function Historico() {
               <p>{count === 1 ? "1 cupcake" : `${count} cupcakes`}</p>
               <strong>Total: {formatCurrency(order.total)}</strong>
               <div className="checkout-actions">
-                <button type="button" onClick={() => void reorder(order)}>
+                <button type="button" className="ghost" onClick={() => void reorder(order)}>
                   Pedir de novo
                 </button>
                 <Link to={`/historico/${order.id}`} className="button-link">

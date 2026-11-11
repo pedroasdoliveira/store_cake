@@ -476,11 +476,70 @@ select {
   border: 1px solid var(--cream);
   border-radius: 16px;
   padding: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .order-card header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-card .checkout-actions {
+  justify-content: flex-end;
+}
+
+.order-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--cream);
+}
+
+.order-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+.order-step {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 16px 12px;
+  border: 1px solid var(--cream);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+}
+
+.order-step.is-done {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.order-step.is-current {
+  background: var(--rose);
+  border-color: var(--rose);
+  color: white;
+}
+
+.order-detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
 }
 
 .receipt {
@@ -787,8 +846,18 @@ select {
   .cart-list li,
   .cart-columns,
   .checkout-columns,
-  .payment-options {
+  .payment-options,
+  .order-steps,
+  .order-detail-columns {
     grid-template-columns: 1fr;
+  }
+
+  .order-banner {
+    align-items: stretch;
+  }
+
+  .order-banner .button-link {
+    text-align: center;
   }
 
   .cart-summary {
