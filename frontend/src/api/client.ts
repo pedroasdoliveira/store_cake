@@ -1,4 +1,4 @@
-import type { AuthUser, Order, Product, ZipCodeAddress } from "../types";
+import type { AuthUser, Category, Order, Product, SaveProductPayload, ZipCodeAddress } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
@@ -33,6 +33,22 @@ function formatZipCode(digits: string) {
 }
 
 export const api = {
+  listCategories: () => request<Category[]>("/api/categories"),
+  createCategory: (adminUserId: number, payload: { name: string; description: string }) =>
+    request<Category>(`/api/categories?adminUserId=${adminUserId}`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  createProduct: (adminUserId: number, payload: SaveProductPayload) =>
+    request<Product>(`/api/products?adminUserId=${adminUserId}`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  updateProduct: (adminUserId: number, productId: number, payload: SaveProductPayload) =>
+    request<Product>(`/api/products/${productId}?adminUserId=${adminUserId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
   listProducts: (category?: string) => {
     const query = category && category !== "todos" ? `?category=${encodeURIComponent(category)}` : "";
     return request<Product[]>(`/api/products${query}`);

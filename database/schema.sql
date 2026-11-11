@@ -13,7 +13,14 @@ CREATE TABLE IF NOT EXISTS products (
     description TEXT NOT NULL,
     price NUMERIC(10, 2) NOT NULL CHECK (price > 0),
     image_url TEXT NOT NULL,
-    category VARCHAR(80) NOT NULL
+    category VARCHAR(80) NOT NULL,
+    discount_percent NUMERIC(5, 2) NOT NULL DEFAULT 0 CHECK (discount_percent >= 0 AND discount_percent <= 90)
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(80) NOT NULL UNIQUE,
+    description VARCHAR(240)
 );
 
 CREATE TABLE IF NOT EXISTS orders (

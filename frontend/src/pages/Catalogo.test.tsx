@@ -8,6 +8,11 @@ import { Catalogo } from "./Catalogo";
 vi.mock("../api/client", () => ({
   api: {
     listProducts: vi.fn(),
+    listCategories: vi.fn().mockResolvedValue([
+      { id: 1, name: "Clássicos", description: "Receitas de sempre da casa." },
+      { id: 2, name: "Chocolate", description: "Massas e coberturas de cacau." },
+      { id: 3, name: "Frutas", description: "Sabores cítricos e de fruta fresca." },
+    ]),
   },
 }));
 
@@ -30,6 +35,9 @@ describe("Catalogo", () => {
 
     expect(screen.queryByRole("heading", { name: "Red Velvet" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Chocolate Belga" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Frutas" }));
+    expect(screen.getByText("Nenhum cupcake neste catálogo.")).toBeInTheDocument();
   });
 
   it("mostra feedback ao adicionar um cupcake", async () => {

@@ -167,6 +167,37 @@ button {
   justify-content: space-between;
   align-items: center;
   margin-top: 12px;
+  gap: 12px;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.price-old {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.admin-section {
+  margin-top: 8px;
+}
+
+.admin-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-card {
+  border: 1px solid var(--cream);
+  border-radius: 16px;
+  padding: 12px 14px;
 }
 
 .panel {

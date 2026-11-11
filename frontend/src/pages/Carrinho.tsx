@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { formatCurrency } from "../utils/money";
+import { chargedPrice } from "../utils/pricing";
 
 export function Carrinho() {
   const { items, remove, updateQuantity, total } = useCart();
@@ -26,7 +27,7 @@ export function Carrinho() {
             <img src={item.imageUrl} alt={item.name} />
             <div>
               <h3>{item.name}</h3>
-              <p>{formatCurrency(item.price)}</p>
+              <p>{formatCurrency(chargedPrice(item))}</p>
             </div>
             <label>
               Qtd
@@ -37,7 +38,7 @@ export function Carrinho() {
                 onChange={(event) => updateQuantity(item.id, Number(event.target.value))}
               />
             </label>
-            <strong>{formatCurrency(item.price * item.quantity)}</strong>
+            <strong>{formatCurrency(chargedPrice(item) * item.quantity)}</strong>
             <button type="button" className="ghost" onClick={() => remove(item.id)}>
               Remover
             </button>

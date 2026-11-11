@@ -17,6 +17,7 @@ export function Navbar() {
         {user ? (
           <>
             <NavLink to="/historico">Pedidos</NavLink>
+            {user.role === "ADMIN" && <NavLink to="/admin">Painel</NavLink>}
             <span className="user-chip">{user.name}</span>
             <button type="button" className="link-button" onClick={logout}>
               Sair

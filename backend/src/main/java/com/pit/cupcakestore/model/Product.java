@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity
 @Table(name = "products")
@@ -31,6 +32,9 @@ public class Product {
 
     @Column(nullable = false, length = 80)
     private String category;
+
+    @Column(name = "discount_percent", precision = 5, scale = 2)
+    private BigDecimal discountPercent;
 
     public Product() {
     }
@@ -89,5 +93,22 @@ public class Product {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public BigDecimal getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public BigDecimal salePrice() {
+        BigDecimal percent = discountPercent == null ? BigDecimal.ZERO : discountPercent;
+        if (percent.signum() <= 0) {
+            return price.setScale(2, RoundingMode.HALF_UP);
+        }
+        BigDecimal factor = BigDecimal.valueOf(100).subtract(percent).movePointLeft(2);
+        return price.multiply(factor).setScale(2, RoundingMode.HALF_UP);
     }
 }

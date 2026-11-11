@@ -66,8 +66,33 @@ class OrderServiceTest {
 
         assertEquals(42L, response.getId());
         assertEquals(new BigDecimal("20.00"), response.getTotal());
+        assertEquals(new BigDecimal("10.00"), response.getItems().get(0).getUnitPrice());
         assertEquals("CONFIRMED", response.getStatus());
         assertEquals(1, response.getItems().size());
+    }
+
+    @Test
+    void createShouldChargeTheDiscountedCatalogPrice() {
+        User user = new User();
+        user.setId(1L);
+        Product product = new Product("Chocolate Belga", "Intenso", new BigDecimal("10.00"), "img", "Chocolate");
+        product.setId(3L);
+        product.setDiscountPercent(new BigDecimal("10"));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(productRepository.findById(3L)).thenReturn(Optional.of(product));
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CreateOrderRequest request = baseRequest();
+        OrderItemRequest item = new OrderItemRequest();
+        item.setProductId(3L);
+        item.setQuantity(2);
+        request.setItems(List.of(item));
+
+        OrderResponse response = orderService.create(request);
+
+        assertEquals(new BigDecimal("9.00"), response.getItems().get(0).getUnitPrice());
+        assertEquals(new BigDecimal("18.00"), response.getTotal());
     }
 
     @Test

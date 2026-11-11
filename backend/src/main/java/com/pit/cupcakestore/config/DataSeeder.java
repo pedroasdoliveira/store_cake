@@ -1,7 +1,9 @@
 package com.pit.cupcakestore.config;
 
+import com.pit.cupcakestore.model.Category;
 import com.pit.cupcakestore.model.Product;
 import com.pit.cupcakestore.model.User;
+import com.pit.cupcakestore.repository.CategoryRepository;
 import com.pit.cupcakestore.repository.ProductRepository;
 import com.pit.cupcakestore.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -19,21 +21,25 @@ public class DataSeeder implements CommandLineRunner {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataSeeder(
             ProductRepository productRepository,
             UserRepository userRepository,
+            CategoryRepository categoryRepository,
             PasswordEncoder passwordEncoder
     ) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
         seedAdmin();
+        seedCategories();
         if (productRepository.count() > 0) {
             return;
         }
@@ -82,6 +88,22 @@ public class DataSeeder implements CommandLineRunner {
                         "Chocolate"
                 )
         ));
+    }
+
+    private void seedCategories() {
+        saveCategory("Clássicos", "Receitas de sempre da casa.");
+        saveCategory("Chocolate", "Massas e coberturas de cacau.");
+        saveCategory("Frutas", "Sabores cítricos e de fruta fresca.");
+    }
+
+    private void saveCategory(String name, String description) {
+        if (categoryRepository.existsByNameIgnoreCase(name)) {
+            return;
+        }
+        Category category = new Category();
+        category.setName(name);
+        category.setDescription(description);
+        categoryRepository.save(category);
     }
 
     private void seedAdmin() {

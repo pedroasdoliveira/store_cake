@@ -5,6 +5,23 @@ export interface Product {
   price: number;
   imageUrl: string;
   category: string;
+  discountPercent?: number;
+  salePrice?: number;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+export interface SaveProductPayload {
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  category: string;
+  discountPercent: number;
 }
 
 export interface CartItem extends Product {

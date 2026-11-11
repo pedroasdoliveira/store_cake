@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import { Feedback } from "../components/Feedback";
 import { ProductCard } from "../components/ProductCard";
-import type { FeedbackMessage, Product } from "../types";
+import type { Category, FeedbackMessage, Product } from "../types";
 
 export function Catalogo() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [catalogs, setCatalogs] = useState<Category[]>([]);
   const [category, setCategory] = useState("todos");
   const [feedback, setFeedback] = useState<FeedbackMessage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,12 +18,15 @@ export function Catalogo() {
       .then(setProducts)
       .catch((error: Error) => setFeedback({ type: "error", text: error.message }))
       .finally(() => setLoading(false));
+    api.listCategories().then(setCatalogs).catch(() => setCatalogs([]));
   }, []);
 
   const categories = useMemo(() => {
-    const unique = Array.from(new Set(products.map((product) => product.category)));
+    const unique = Array.from(
+      new Set([...catalogs.map((item) => item.name), ...products.map((product) => product.category)])
+    );
     return ["todos", ...unique];
-  }, [products]);
+  }, [catalogs, products]);
 
   const visible = products.filter(
     (product) => category === "todos" || product.category === category
@@ -56,17 +60,20 @@ export function Catalogo() {
       {loading ? (
         <p>Carregando vitrine...</p>
       ) : (
-        <div className="grid">
-          {visible.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onAdded={() =>
-                setFeedback({ type: "success", text: `${product.name} adicionado ao carrinho.` })
-              }
-            />
-          ))}
-        </div>
+        <>
+          {visible.length === 0 && <p>Nenhum cupcake neste catálogo.</p>}
+          <div className="grid">
+            {visible.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAdded={() =>
+                  setFeedback({ type: "success", text: `${product.name} adicionado ao carrinho.` })
+                }
+              />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );

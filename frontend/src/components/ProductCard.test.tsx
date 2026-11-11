@@ -15,6 +15,18 @@ describe("ProductCard", () => {
     expect(screen.getByText(/R\$\s*12,90/)).toBeInTheDocument();
   });
 
+  it("mostra o preço original riscado quando há desconto", () => {
+    renderWithProviders(
+      <ProductCard
+        product={{ ...redVelvet, discountPercent: 10, salePrice: 11.61 }}
+        onAdded={() => undefined}
+      />
+    );
+
+    expect(screen.getByText(/R\$\s*12,90/)).toBeInTheDocument();
+    expect(screen.getByText(/R\$\s*11,61/)).toBeInTheDocument();
+  });
+
   it("adiciona o produto ao carrinho e dispara o callback", async () => {
     const user = userEvent.setup();
     const onAdded = vi.fn();

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { CartItem, Product } from "../types";
+import { chargedPrice } from "../utils/pricing";
 
 const STORAGE_KEY = "cupcake-cart";
 
@@ -59,7 +60,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
 
     const clear = () => setItems([]);
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const total = items.reduce((sum, item) => sum + chargedPrice(item) * item.quantity, 0);
     const count = items.reduce((sum, item) => sum + item.quantity, 0);
 
     return { items, add, remove, updateQuantity, clear, total, count };

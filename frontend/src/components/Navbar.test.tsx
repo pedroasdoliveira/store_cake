@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { cartItem, loggedUser } from "../test/fixtures";
+import { adminUser, cartItem, loggedUser } from "../test/fixtures";
 import { renderWithProviders } from "../test/render";
 import { Navbar } from "./Navbar";
 
@@ -22,6 +22,13 @@ describe("Navbar", () => {
     expect(await screen.findByText("Ana Cupcake")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Pedidos" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Carrinho (2)" })).toBeInTheDocument();
+  });
+
+  it("mostra o painel só para o administrador", async () => {
+    renderWithProviders(<Navbar />, { user: adminUser });
+
+    expect(await screen.findByRole("link", { name: "Painel" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /novo administrador/i })).not.toBeInTheDocument();
   });
 
   it("sai da conta ao clicar em Sair", async () => {

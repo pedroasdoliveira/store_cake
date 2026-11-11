@@ -12,6 +12,8 @@ public class ProductResponse {
     private BigDecimal price;
     private String imageUrl;
     private String category;
+    private BigDecimal discountPercent;
+    private BigDecimal salePrice;
 
     public static ProductResponse from(Product product) {
         ProductResponse response = new ProductResponse();
@@ -21,6 +23,8 @@ public class ProductResponse {
         response.price = product.getPrice();
         response.imageUrl = product.getImageUrl();
         response.category = product.getCategory();
+        response.discountPercent = product.getDiscountPercent() == null ? BigDecimal.ZERO : product.getDiscountPercent();
+        response.salePrice = product.salePrice();
         return response;
     }
 
@@ -46,5 +50,13 @@ public class ProductResponse {
 
     public String getCategory() {
         return category;
+    }
+
+    public BigDecimal getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
     }
 }
