@@ -7,6 +7,7 @@ import { Carrinho } from "./pages/Carrinho";
 import { Catalogo } from "./pages/Catalogo";
 import { Checkout } from "./pages/Checkout";
 import { Historico } from "./pages/Historico";
+import { Pedido } from "./pages/Pedido";
 import { Login } from "./pages/Login";
 import { NovoAdmin } from "./pages/NovoAdmin";
 
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/historico" element={<Historico />} />
+          <Route path="/historico/:id" element={<Pedido />} />
           <Route
             path="/admin"
             element={

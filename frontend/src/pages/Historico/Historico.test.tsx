@@ -23,7 +23,9 @@ describe("Historico", () => {
     renderWithProviders(<Historico />, { route: "/historico", user: loggedUser });
 
     expect(await screen.findByRole("heading", { name: "Pedido #42" })).toBeInTheDocument();
-    expect(screen.getByText("2x Red Velvet — R$ 25,80")).toBeInTheDocument();
+    expect(screen.getByText("2 cupcakes")).toBeInTheDocument();
+    expect(screen.getByText("Seu pedido #42 foi recebido.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Detalhes" })).toHaveAttribute("href", "/historico/42");
     expect(api.listOrders).toHaveBeenCalledWith(loggedUser.userId);
   });
 });

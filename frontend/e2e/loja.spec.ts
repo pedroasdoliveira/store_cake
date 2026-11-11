@@ -198,5 +198,5 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
 
   await page.getByRole("button", { name: "Ver meus pedidos" }).click();
   await expect(page.getByRole("heading", { name: "Pedido #42" })).toBeVisible();
-  await expect(page.getByText("2x Red Velvet")).toBeVisible();
+  await expect(page.getByText("2 cupcakes")).toBeVisible();
 });

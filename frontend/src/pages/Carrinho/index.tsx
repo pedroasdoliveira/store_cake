@@ -1,15 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Feedback } from "../../components/Feedback";
 import { useCart } from "../../context/CartContext";
 import { formatCurrency } from "../../utils/money";
 import { chargedPrice } from "../../utils/pricing";
 
 export function Carrinho() {
   const { items, remove, updateQuantity, total } = useCart();
+  const missingNames = (useLocation().state as { missingNames?: string[] } | null)?.missingNames ?? [];
+  const missingMessage =
+    missingNames.length > 0
+      ? { type: "error" as const, text: `Estes itens não estão mais no cardápio: ${missingNames.join(", ")}.` }
+      : null;
 
   if (items.length === 0) {
     return (
       <section className="panel">
         <h1>Seu carrinho</h1>
+        <Feedback message={missingMessage} />
         <p>Seu carrinho está vazio.</p>
         <Link to="/" className="button-link">
           Ver vitrine
@@ -21,6 +28,7 @@ export function Carrinho() {
   return (
     <section className="cart-layout">
       <h1>Seu carrinho</h1>
+      <Feedback message={missingMessage} />
       <div className="cart-columns">
         <ul className="cart-list panel">
           {items.map((item) => {
