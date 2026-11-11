@@ -112,7 +112,7 @@ export function PixPayment({ order, amount, onOpenHistory }: PixPaymentProps) {
           </button>
         )}
         <button type="button" className="ghost" onClick={onOpenHistory}>
-          Ver histórico
+          Ver meus pedidos
         </button>
       </div>
     </section>

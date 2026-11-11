@@ -23,18 +23,26 @@ import { BRAZIL_STATES, isBrazilState } from "../../utils/brazilStates";
 import {
   checkoutSummary,
   isCardComplete,
+  paymentMethodLabel,
   maskCardNumber,
   maskExpiry,
   maskZipCode,
   type CardDraft,
 } from "../../utils/checkout";
 import { formatCurrency } from "../../utils/money";
+import { chargedPrice } from "../../utils/pricing";
 
 type PaymentMethod = "PIX" | "CARTAO" | "DINHEIRO";
 type AddressStatus = "loading" | "ready" | "error";
 type CardField = "number" | "name" | "expiry" | "cvv";
 
 const emptyCard: CardDraft = { number: "", name: "", expiry: "", cvv: "" };
+
+const paymentChoices: Array<{ value: PaymentMethod; label: string }> = [
+  { value: "PIX", label: "PIX" },
+  { value: "CARTAO", label: "Cartão de crédito" },
+  { value: "DINHEIRO", label: "Dinheiro na entrega" },
+];
 
 export function Checkout() {
   const { user } = useAuth();
@@ -101,6 +109,7 @@ export function Checkout() {
   const selectedAddress =
     savedAddresses.find((address) => address.id === localBook.selectedId) ?? savedAddresses[0] ?? null;
   const summary = checkoutSummary(total);
+  const selectedPromotion = promotions.find((promotion) => String(promotion.id) === promotionId) ?? null;
   const showAddressForm = addressStatus !== "loading" && (addingAddress || savedAddresses.length === 0);
   const cardReady = paymentMethod !== "CARTAO" || isCardComplete(card);
 
@@ -235,10 +244,9 @@ export function Checkout() {
         ...(promotionId ? { promotionId: Number(promotionId) } : {}),
         items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
       });
-      const amount = summary.total;
       clear();
       if (paymentMethod === "PIX") {
-        setPixAmount(amount);
+        setPixAmount(order.total);
         setPixOrder(order);
         return;
       }
@@ -297,14 +305,14 @@ export function Checkout() {
           <p>
             Valor total: <strong>{formatCurrency(confirmation.total)}</strong>
           </p>
-          <p>Pagamento: {confirmation.paymentMethod}</p>
+          <p>Pagamento: {paymentMethodLabel(confirmation.paymentMethod)}</p>
           <p>
             Entrega: {confirmation.street}, {confirmation.number} - {confirmation.city}/{confirmation.state}
           </p>
         </div>
         <div className="checkout-actions">
           <button type="button" onClick={() => navigate("/historico")}>
-            Ver histórico
+            Ver meus pedidos
           </button>
         </div>
       </section>
@@ -313,9 +321,11 @@ export function Checkout() {
 
   return (
     <div className="checkout-layout">
-      <h1>Finalizar pedido</h1>
+      <h1>Finalizar compra</h1>
       <Feedback message={feedback} />
 
+      <div className="checkout-columns">
+      <div className="checkout-main">
       <section className="panel checkout-section" aria-labelledby="delivery-address-title">
         <h2 id="delivery-address-title">Endereço de entrega</h2>
         {addressStatus === "loading" && <p>Carregando endereços...</p>}
@@ -471,51 +481,23 @@ export function Checkout() {
 
       <section className="panel checkout-section" aria-labelledby="payment-title">
         <h2 id="payment-title">Pagamento</h2>
-        <dl className="checkout-totals">
-          <div>
-            <dt>Total</dt>
-            <dd>{formatCurrency(summary.subtotal)}</dd>
-          </div>
-          <div>
-            <dt>Entrega</dt>
-            <dd>{summary.delivery === 0 ? "Grátis" : formatCurrency(summary.delivery)}</dd>
-          </div>
-          {summary.discount > 0 && (
-            <div>
-              <dt>Desconto</dt>
-              <dd>- {formatCurrency(summary.discount)}</dd>
-            </div>
-          )}
-          <div className="checkout-grand-total">
-            <dt>Total da compra</dt>
-            <dd>{formatCurrency(summary.total)}</dd>
-          </div>
-        </dl>
-        <form onSubmit={finishOrder} className="form">
-          {promotions.length > 0 && (
-            <label>
-              Promoção
-              <select value={promotionId} onChange={(event) => setPromotionId(event.target.value)}>
-                <option value="">Nenhuma</option>
-                {promotions.map((promotion) => (
-                  <option key={promotion.id} value={promotion.id}>
-                    {promotion.title} ({promotion.discountPercent}%)
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          <label>
-            Pagamento
-            <select
-              value={paymentMethod}
-              onChange={(event) => setPaymentMethod(event.target.value as PaymentMethod)}
+        <div className="payment-options" role="radiogroup" aria-label="Pagamento">
+          {paymentChoices.map((choice) => (
+            <label
+              key={choice.value}
+              className={paymentMethod === choice.value ? "payment-option is-selected" : "payment-option"}
             >
-              <option value="PIX">PIX</option>
-              <option value="CARTAO">Cartão de crédito</option>
-              <option value="DINHEIRO">Dinheiro na entrega</option>
-            </select>
-          </label>
+              <input
+                type="radio"
+                name="payment-method"
+                value={choice.value}
+                checked={paymentMethod === choice.value}
+                onChange={() => setPaymentMethod(choice.value)}
+              />
+              {choice.label}
+            </label>
+          ))}
+        </div>
           {paymentMethod === "PIX" && (
             <p className="checkout-note">O QR Code será gerado na próxima tela e vale por 15 minutos.</p>
           )}
@@ -583,13 +565,60 @@ export function Checkout() {
             </div>
           )}
           {blockReason && <p className="checkout-note">{blockReason}</p>}
-          <div className="checkout-actions">
-            <button type="submit" disabled={Boolean(blockReason) || submitting}>
-              {submitting ? "Finalizando..." : "Finalizar compra"}
-            </button>
+      </section>
+      </div>
+
+      <section className="panel checkout-summary" aria-labelledby="order-summary-title">
+        <h2 id="order-summary-title">Seu pedido</h2>
+        <ul className="summary-items">
+          {items.map((item) => (
+            <li key={item.id}>
+              <span>
+                {item.quantity}× {item.name}
+              </span>
+              <span>{formatCurrency(chargedPrice(item) * item.quantity)}</span>
+            </li>
+          ))}
+        </ul>
+        <dl className="checkout-totals">
+          <div>
+            <dt>Subtotal</dt>
+            <dd>{formatCurrency(summary.subtotal)}</dd>
           </div>
+          <div>
+            <dt>Entrega</dt>
+            <dd>Grátis</dd>
+          </div>
+          <div className="checkout-grand-total">
+            <dt>Total</dt>
+            <dd>{formatCurrency(summary.total)}</dd>
+          </div>
+        </dl>
+        {promotions.length > 0 && (
+          <label>
+            Promoção
+            <select value={promotionId} onChange={(event) => setPromotionId(event.target.value)}>
+              <option value="">Nenhuma</option>
+              {promotions.map((promotion) => (
+                <option key={promotion.id} value={promotion.id}>
+                  {promotion.title} ({promotion.discountPercent}%)
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {selectedPromotion && (
+          <p className="checkout-note">
+            O desconto de {selectedPromotion.title} entra no total quando o pedido for confirmado.
+          </p>
+        )}
+        <form onSubmit={finishOrder}>
+          <button type="submit" disabled={Boolean(blockReason) || submitting}>
+            {submitting ? "Finalizando..." : "Pagar"}
+          </button>
         </form>
       </section>
+      </div>
     </div>
   );
 }

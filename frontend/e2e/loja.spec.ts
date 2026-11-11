@@ -168,9 +168,9 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
   await page.getByRole("article").filter({ hasText: "Red Velvet" }).getByRole("button", { name: "Adicionar" }).click();
   await page.getByRole("link", { name: "Carrinho, 2 itens" }).click();
 
-  await expect(page.getByRole("heading", { name: "Carrinho" })).toBeVisible();
-  await expect(page.getByText(/Total:/)).toContainText("25,80");
-  await page.getByRole("link", { name: "Finalizar pedido" }).click();
+  await expect(page.getByRole("heading", { name: "Seu carrinho" })).toBeVisible();
+  await expect(page.getByText("Total", { exact: true }).locator("xpath=..")).toContainText("25,80");
+  await page.getByRole("link", { name: "Finalizar compra" }).click();
   await expect(page.getByText("Faça login para finalizar o pedido.")).toBeVisible();
 
   await page.getByRole("link", { name: "Cadastrar" }).click();
@@ -182,7 +182,7 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Sabores pensados para adoçar o seu dia" })).toBeVisible();
 
   await page.getByRole("link", { name: "Carrinho, 2 itens" }).click();
-  await page.getByRole("link", { name: "Finalizar pedido" }).click();
+  await page.getByRole("link", { name: "Finalizar compra" }).click();
   await page.getByLabel("CEP").fill("01001000");
   await expect(page.getByLabel("Rua")).toHaveValue("Rua das Flores");
   await expect(page.getByLabel("Cidade")).toHaveValue("São Paulo");
@@ -190,13 +190,13 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
   await page.getByLabel("Número").fill("100");
   await page.getByRole("button", { name: "Salvar endereço" }).click();
   await expect(page.getByText(/Rua das Flores, 100/)).toBeVisible();
-  await page.getByRole("button", { name: "Finalizar compra" }).click();
+  await page.getByRole("button", { name: "Pagar" }).click();
 
   await expect(page.getByRole("heading", { name: "Pague com PIX" })).toBeVisible();
   await expect(page.getByText("#42")).toBeVisible();
   await expect(page.getByRole("timer")).toContainText(/15:00|14:59/);
 
-  await page.getByRole("button", { name: "Ver histórico" }).click();
+  await page.getByRole("button", { name: "Ver meus pedidos" }).click();
   await expect(page.getByRole("heading", { name: "Pedido #42" })).toBeVisible();
   await expect(page.getByText("2x Red Velvet")).toBeVisible();
 });

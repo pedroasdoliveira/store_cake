@@ -37,6 +37,16 @@ function roundMoney(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
+const paymentLabels: Record<string, string> = {
+  PIX: "PIX",
+  CARTAO: "Cartão de crédito",
+  DINHEIRO: "Dinheiro na entrega",
+};
+
+export function paymentMethodLabel(method: string) {
+  return paymentLabels[method] ?? method;
+}
+
 export function checkoutSummary(subtotal: number): CheckoutSummary {
   const delivery = 0;
   const discount = 0;

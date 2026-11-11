@@ -110,19 +110,20 @@ describe("Checkout", () => {
     vi.mocked(api.createOrder).mockResolvedValue(confirmedOrder);
     renderCheckout();
 
-    const payment = await screen.findByRole("region", { name: "Pagamento" });
-    expect(payment).toHaveTextContent("Entrega");
-    expect(payment).toHaveTextContent("Grátis");
-    expect(payment).toHaveTextContent("Total da compra");
-    expect(payment).toHaveTextContent(/25,80/);
-    expect(payment).not.toHaveTextContent("Desconto");
-    expect(screen.getByRole("region", { name: "Endereço de entrega" })).not.toHaveTextContent("Total da compra");
+    const summary = await screen.findByRole("region", { name: "Seu pedido" });
+    expect(summary).toHaveTextContent("Entrega");
+    expect(summary).toHaveTextContent("Grátis");
+    expect(summary).toHaveTextContent("Total");
+    expect(summary).toHaveTextContent(/25,80/);
+    expect(summary).not.toHaveTextContent("Desconto");
+    expect(screen.getByRole("region", { name: "Endereço de entrega" })).not.toHaveTextContent("Total");
+    expect(screen.getByRole("region", { name: "Pagamento" })).not.toHaveTextContent("25,80");
     expect(screen.queryByText(/Total atual/)).not.toBeInTheDocument();
     expect(await screen.findByText("Salve um endereço de entrega para finalizar a compra.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Finalizar compra" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Pagar" })).toBeDisabled();
 
     await saveAddress(user);
-    await user.click(screen.getByRole("button", { name: "Finalizar compra" }));
+    await user.click(screen.getByRole("button", { name: "Pagar" }));
 
     expect(api.createOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -163,8 +164,12 @@ describe("Checkout", () => {
     renderCheckout();
 
     await user.selectOptions(await screen.findByLabelText("Promoção"), "5");
+    expect(
+      screen.getByText("O desconto de Semana do chocolate entra no total quando o pedido for confirmado.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Total").closest("div")).toHaveTextContent(/R\$\s*25,80/);
     await saveAddress(user);
-    await user.click(screen.getByRole("button", { name: "Finalizar compra" }));
+    await user.click(screen.getByRole("button", { name: "Pagar" }));
 
     expect(api.createOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -179,8 +184,8 @@ describe("Checkout", () => {
     renderCheckout();
     await saveAddress(user);
 
-    await user.selectOptions(screen.getByRole("combobox", { name: "Pagamento" }), "CARTAO");
-    expect(screen.getByRole("button", { name: "Finalizar compra" })).toBeDisabled();
+    await user.click(screen.getByRole("radio", { name: "Cartão de crédito" }));
+    expect(screen.getByRole("button", { name: "Pagar" })).toBeDisabled();
 
     await user.click(screen.getByLabelText("Número do cartão"));
     await user.paste("4111111111111111");
@@ -193,9 +198,9 @@ describe("Checkout", () => {
     expect(document.querySelector(".credit-card-inner")).toHaveClass("is-flipped");
     expect(document.querySelector(".credit-card-number")).toHaveTextContent("4111111111111111");
     expect(screen.getByText("ANA CUPCAKE")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Finalizar compra" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Pagar" })).toBeEnabled();
 
-    await user.click(screen.getByRole("button", { name: "Finalizar compra" }));
+    await user.click(screen.getByRole("button", { name: "Pagar" }));
 
     const payload = vi.mocked(api.createOrder).mock.calls[0][0] as { paymentMethod: string; cvv?: string };
     expect(payload.paymentMethod).toBe("CARTAO");

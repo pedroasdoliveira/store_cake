@@ -1,38 +1,7 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { formatCurrency } from "../../utils/money";
 import { chargedPrice } from "../../utils/pricing";
-
-function QuantityField({
-  quantity,
-  onChange,
-}: {
-  quantity: number;
-  onChange: (quantity: number) => void;
-}) {
-  const [draft, setDraft] = useState(String(quantity));
-
-  useEffect(() => {
-    setDraft(String(quantity));
-  }, [quantity]);
-
-  return (
-    <input
-      type="number"
-      min={1}
-      value={draft}
-      onChange={(event) => {
-        const next = event.target.value;
-        setDraft(next);
-        const parsed = Number(next);
-        if (Number.isFinite(parsed) && parsed >= 1) {
-          onChange(parsed);
-        }
-      }}
-    />
-  );
-}
 
 export function Carrinho() {
   const { items, remove, updateQuantity, total } = useCart();
@@ -40,7 +9,7 @@ export function Carrinho() {
   if (items.length === 0) {
     return (
       <section className="panel">
-        <h1>Carrinho</h1>
+        <h1>Seu carrinho</h1>
         <p>Seu carrinho está vazio.</p>
         <Link to="/" className="button-link">
           Ver vitrine
@@ -50,35 +19,66 @@ export function Carrinho() {
   }
 
   return (
-    <section className="panel">
-      <h1>Carrinho</h1>
-      <ul className="cart-list">
-        {items.map((item) => (
-          <li key={item.id}>
-            <img src={item.imageUrl} alt={item.name} />
+    <section className="cart-layout">
+      <h1>Seu carrinho</h1>
+      <div className="cart-columns">
+        <ul className="cart-list panel">
+          {items.map((item) => {
+            const unitPrice = chargedPrice(item);
+            return (
+              <li key={item.id}>
+                <img src={item.imageUrl} alt={item.name} />
+                <div>
+                  <h2>{item.name}</h2>
+                  <p>{formatCurrency(unitPrice)}</p>
+                  <div className="qty-stepper">
+                    <button
+                      type="button"
+                      aria-label={`Diminuir quantidade de ${item.name}`}
+                      disabled={item.quantity <= 1}
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    >
+                      −
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      type="button"
+                      aria-label={`Aumentar quantidade de ${item.name}`}
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button type="button" className="ghost" onClick={() => remove(item.id)}>
+                    Remover
+                  </button>
+                </div>
+                <strong>{formatCurrency(unitPrice * item.quantity)}</strong>
+              </li>
+            );
+          })}
+        </ul>
+        <aside className="panel cart-summary-card">
+          <h2>Resumo</h2>
+          <dl className="checkout-totals">
             <div>
-              <h3>{item.name}</h3>
-              <p>{formatCurrency(chargedPrice(item))}</p>
+              <dt>Subtotal</dt>
+              <dd>{formatCurrency(total)}</dd>
             </div>
-            <label>
-              Qtd
-              <QuantityField quantity={item.quantity} onChange={(quantity) => updateQuantity(item.id, quantity)} />
-            </label>
-            <strong>{formatCurrency(chargedPrice(item) * item.quantity)}</strong>
-            <button type="button" className="ghost" onClick={() => remove(item.id)}>
-              Remover
-            </button>
-          </li>
-        ))}
-      </ul>
-      <footer className="cart-summary">
-        <p>
-          Total: <strong>{formatCurrency(total)}</strong>
-        </p>
-        <Link to="/checkout" className="button-link">
-          Finalizar pedido
-        </Link>
-      </footer>
+            <div>
+              <dt>Entrega</dt>
+              <dd>Grátis</dd>
+            </div>
+            <div className="checkout-grand-total">
+              <dt>Total</dt>
+              <dd>{formatCurrency(total)}</dd>
+            </div>
+          </dl>
+          <Link to="/checkout" className="button-link">
+            Finalizar compra
+          </Link>
+        </aside>
+      </div>
     </section>
   );
 }

@@ -17,13 +17,18 @@ describe("Carrinho", () => {
     const user = userEvent.setup();
     renderWithProviders(<Carrinho />, { route: "/carrinho", cart: [cartItem] });
 
+    expect(screen.getByRole("heading", { name: "Seu carrinho" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Red Velvet" })).toBeInTheDocument();
-    expect(screen.getByText(/Total:/)).toHaveTextContent(/R\$\s*25,80/);
+    expect(screen.getByText("Total").closest("div")).toHaveTextContent(/R\$\s*25,80/);
+    expect(screen.getByText("Entrega").closest("div")).toHaveTextContent("Grátis");
 
-    await user.clear(screen.getByLabelText("Qtd"));
-    await user.type(screen.getByLabelText("Qtd"), "3");
+    await user.click(screen.getByRole("button", { name: "Aumentar quantidade de Red Velvet" }));
 
-    expect(screen.getByText(/Total:/)).toHaveTextContent(/R\$\s*38,70/);
+    expect(screen.getByText("Total").closest("div")).toHaveTextContent(/R\$\s*38,70/);
+
+    await user.click(screen.getByRole("button", { name: "Diminuir quantidade de Red Velvet" }));
+    await user.click(screen.getByRole("button", { name: "Diminuir quantidade de Red Velvet" }));
+    expect(screen.getByRole("button", { name: "Diminuir quantidade de Red Velvet" })).toBeDisabled();
 
     await user.click(screen.getByRole("button", { name: "Remover" }));
 
