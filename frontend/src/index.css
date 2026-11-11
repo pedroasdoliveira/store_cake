@@ -272,6 +272,283 @@ select {
   margin-bottom: 16px;
 }
 
+.checkout-layout {
+  display: grid;
+  gap: 20px;
+}
+
+.checkout-section h2 {
+  margin-top: 0;
+}
+
+.checkout-layout label {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.checkout-layout input,
+.checkout-layout select,
+.checkout-layout textarea {
+  font-family: "Source Sans 3", sans-serif;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.checkout-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.checkout-note,
+.field-hint {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.address-summary {
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.address-summary p {
+  margin: 0;
+}
+
+.address-picker {
+  border: 1px solid #ead7cb;
+  border-radius: 16px;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+}
+
+.address-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.checkout-totals {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.checkout-totals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.checkout-totals dt,
+.checkout-totals dd {
+  margin: 0;
+}
+
+.checkout-totals dt {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.checkout-totals dd {
+  font-weight: 500;
+}
+
+.checkout-grand-total {
+  border-top: 1px solid var(--cream);
+  padding-top: 8px;
+  font-size: 1.15rem;
+}
+
+.checkout-grand-total dd {
+  font-weight: 700;
+}
+
+.payment-card-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+}
+
+.credit-card-scene {
+  width: min(100%, 320px);
+  margin-inline: auto;
+  perspective: 1200px;
+}
+
+.credit-card-inner {
+  position: relative;
+  aspect-ratio: 1.586 / 1;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.credit-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.credit-card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.credit-card-front {
+  background: linear-gradient(135deg, #e07a86, var(--rose-dark) 58%, #6e2c36);
+  color: white;
+}
+
+.credit-card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(160deg, #4d3330, #2a1d1b);
+  color: white;
+}
+
+.credit-card-brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.credit-card-brand strong {
+  font-family: "Playfair Display", serif;
+  font-size: 1.2rem;
+}
+
+.credit-card-chip {
+  width: 42px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f7e7c1, #d4b36a 48%, #f3e2d4);
+}
+
+.credit-card-number {
+  display: flex;
+  gap: 12px;
+  margin: 14px 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+}
+
+.credit-card-group {
+  display: inline-flex;
+}
+
+.credit-card-digit.is-filled {
+  display: inline-block;
+  animation: card-digit-in 0.28s ease;
+}
+
+.credit-card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+}
+
+.credit-card-footer p {
+  margin: 0;
+}
+
+.credit-card-footer .is-placeholder,
+.credit-card-number .credit-card-digit:not(.is-filled) {
+  opacity: 0.72;
+}
+
+.credit-card-stripe {
+  height: 42px;
+  margin: 8px -18px 0;
+  background: #1a1210;
+}
+
+.credit-card-cvv-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.credit-card-cvv-row strong {
+  min-width: 72px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  text-align: center;
+  letter-spacing: 0.14em;
+}
+
+.pix-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.pix-amount,
+.pix-timer {
+  margin: 0;
+  text-align: center;
+}
+
+.pix-qr {
+  display: flex;
+  justify-content: center;
+}
+
+.pix-qr svg {
+  width: min(100%, 240px);
+  height: auto;
+  background: white;
+  border-radius: 16px;
+}
+
+.pix-qr.is-expired {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.pix-code {
+  width: 100%;
+  min-height: 88px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #ead7cb;
+  resize: vertical;
+}
+
+@keyframes card-digit-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 720px) {
   .navbar {
     flex-direction: column;
@@ -287,5 +564,27 @@ select {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+  }
+
+  .payment-card-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .checkout-actions button,
+  .checkout-actions .button-link {
+    width: min(100%, 320px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .credit-card-inner,
+  .credit-card-digit.is-filled {
+    animation: none;
+    transition: none;
   }
 }

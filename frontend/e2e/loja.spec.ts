@@ -80,12 +80,27 @@ async function mockBackend(page: Page) {
     });
   });
 
+  const orders: Array<typeof createdOrder> = [];
+
+  await page.route("**/viacep.com.br/**", async (route) => {
+    await route.fulfill({
+      json: {
+        cep: "01001-000",
+        logradouro: "Rua das Flores",
+        bairro: "Centro",
+        localidade: "São Paulo",
+        uf: "SP",
+      },
+    });
+  });
+
   await page.route("**/api/orders**", async (route) => {
     if (route.request().method() === "POST") {
+      orders.push(createdOrder);
       await route.fulfill({ status: 201, json: createdOrder });
       return;
     }
-    await route.fulfill({ json: [createdOrder] });
+    await route.fulfill({ json: orders });
   });
 }
 
@@ -134,16 +149,18 @@ test("percorre cadastro, carrinho, checkout e histórico", async ({ page }) => {
 
   await page.getByRole("link", { name: "Carrinho (2)" }).click();
   await page.getByRole("link", { name: "Finalizar pedido" }).click();
-  await page.getByLabel("Rua").fill("Rua das Flores");
+  await page.getByLabel("CEP").fill("01001000");
+  await expect(page.getByLabel("Rua")).toHaveValue("Rua das Flores");
+  await expect(page.getByLabel("Cidade")).toHaveValue("São Paulo");
+  await expect(page.getByLabel("UF")).toHaveValue("SP");
   await page.getByLabel("Número").fill("100");
-  await page.getByLabel("Bairro").fill("Centro");
-  await page.getByLabel("Cidade").fill("São Paulo");
-  await page.getByLabel("CEP").fill("01000-000");
-  await page.getByRole("button", { name: "Confirmar pedido" }).click();
+  await page.getByRole("button", { name: "Salvar endereço" }).click();
+  await expect(page.getByText(/Rua das Flores, 100/)).toBeVisible();
+  await page.getByRole("button", { name: "Finalizar compra" }).click();
 
-  await expect(page.getByRole("heading", { name: "Pedido confirmado" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pague com PIX" })).toBeVisible();
   await expect(page.getByText("#42")).toBeVisible();
-  await expect(page.getByRole("status")).toContainText("Pedido #42 confirmado");
+  await expect(page.getByRole("timer")).toContainText(/15:00|14:59/);
 
   await page.getByRole("button", { name: "Ver histórico" }).click();
   await expect(page.getByRole("heading", { name: "Pedido #42" })).toBeVisible();

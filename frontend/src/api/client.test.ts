@@ -87,4 +87,32 @@ describe("api client", () => {
     );
     expect(fetchMock).toHaveBeenNthCalledWith(2, "http://localhost:8080/api/orders?userId=7", expect.any(Object));
   });
+
+  it("consulta o CEP na ViaCEP e normaliza o endereço", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({
+        cep: "01001-000",
+        logradouro: "Praça da Sé",
+        bairro: "Sé",
+        localidade: "São Paulo",
+        uf: "SP",
+      })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(api.lookupZipCode("01001-000")).resolves.toEqual({
+      street: "Praça da Sé",
+      neighborhood: "Sé",
+      city: "São Paulo",
+      state: "SP",
+      zipCode: "01001-000",
+    });
+    expect(fetchMock).toHaveBeenCalledWith("https://viacep.com.br/ws/01001000/json/");
+  });
+
+  it("avisa quando o CEP não existe", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ erro: true })));
+
+    await expect(api.lookupZipCode("00000000")).rejects.toThrow("CEP não encontrado.");
+  });
 });

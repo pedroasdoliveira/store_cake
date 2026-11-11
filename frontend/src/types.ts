@@ -46,3 +46,22 @@ export interface FeedbackMessage {
   type: "success" | "error";
   text: string;
 }
+
+export interface DeliveryAddress {
+  id: string;
+  street: string;
+  number: string;
+  complement: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
+
+export interface ZipCodeAddress {
+  street: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
