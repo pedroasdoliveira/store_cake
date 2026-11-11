@@ -11,10 +11,13 @@ export interface CartItem extends Product {
   quantity: number;
 }
 
+export type UserRole = "CUSTOMER" | "ADMIN";
+
 export interface AuthUser {
   userId: number;
   name: string;
   email: string;
+  role: UserRole;
 }
 
 export interface OrderItem {

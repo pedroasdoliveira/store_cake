@@ -20,7 +20,12 @@ export function Cadastro() {
     setFeedback(null);
     try {
       const response = await api.register({ name, email, password });
-      login({ userId: response.userId, name: response.name, email: response.email });
+      login({
+        userId: response.userId,
+        name: response.name,
+        email: response.email,
+        role: "CUSTOMER",
+      });
       setFeedback({ type: "success", text: response.message });
       setTimeout(() => navigate("/"), 700);
     } catch (error) {

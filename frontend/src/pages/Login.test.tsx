@@ -31,6 +31,28 @@ describe("Login", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("Login realizado com sucesso.");
     expect(JSON.parse(localStorage.getItem("cupcake-auth") ?? "{}")).toMatchObject({
       email: "ana@loja.com",
+      role: "CUSTOMER",
+    });
+  });
+
+  it("guarda a sessão de administrador", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.login).mockResolvedValue({
+      userId: 1,
+      name: "Administrador",
+      email: "admin@doceninho.com",
+      role: "ADMIN",
+      message: "Login realizado com sucesso.",
+    });
+
+    renderWithProviders(<Login />, { route: "/login" });
+    await user.type(screen.getByLabelText("E-mail"), "admin@doceninho.com");
+    await user.type(screen.getByLabelText("Senha"), "admin123");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent("Login realizado com sucesso.");
+    expect(JSON.parse(localStorage.getItem("cupcake-auth") ?? "{}")).toMatchObject({
+      role: "ADMIN",
     });
   });
 

@@ -66,7 +66,9 @@ class AuthServiceTest {
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(captor.capture());
         assertEquals("hash", captor.getValue().getPassword());
+        assertEquals("CUSTOMER", captor.getValue().getRole());
         assertEquals("ana@loja.com", response.getEmail());
+        assertEquals("CUSTOMER", response.getRole());
         assertEquals("Cadastro realizado com sucesso.", response.getMessage());
     }
 
@@ -85,6 +87,7 @@ class AuthServiceTest {
         user.setName("Ana Cupcake");
         user.setEmail("ana@loja.com");
         user.setPassword("hash");
+        user.setRole("ADMIN");
 
         when(userRepository.findByEmailIgnoreCase("ana@loja.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("senha123", "hash")).thenReturn(true);
@@ -92,6 +95,7 @@ class AuthServiceTest {
         AuthResponse response = authService.login(loginRequest);
 
         assertEquals(7L, response.getUserId());
+        assertEquals("ADMIN", response.getRole());
         assertEquals("Login realizado com sucesso.", response.getMessage());
     }
 

@@ -24,6 +24,14 @@ export const loggedUser: AuthUser = {
   userId: 7,
   name: "Ana Cupcake",
   email: "ana@loja.com",
+  role: "CUSTOMER",
+};
+
+export const adminUser: AuthUser = {
+  userId: 1,
+  name: "Administrador",
+  email: "admin@doceninho.com",
+  role: "ADMIN",
 };
 
 export const confirmedOrder: Order = {

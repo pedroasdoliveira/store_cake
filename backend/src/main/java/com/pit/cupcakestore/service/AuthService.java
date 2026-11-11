@@ -31,9 +31,10 @@ public class AuthService {
         user.setName(request.getName().trim());
         user.setEmail(request.getEmail().trim().toLowerCase());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole("CUSTOMER");
 
         User saved = userRepository.save(user);
-        return new AuthResponse(saved.getId(), saved.getName(), saved.getEmail(), "Cadastro realizado com sucesso.");
+        return toResponse(saved, "Cadastro realizado com sucesso.");
     }
 
     @Transactional(readOnly = true)
@@ -45,6 +46,11 @@ public class AuthService {
             throw new BusinessException("E-mail ou senha inválidos.");
         }
 
-        return new AuthResponse(user.getId(), user.getName(), user.getEmail(), "Login realizado com sucesso.");
+        return toResponse(user, "Login realizado com sucesso.");
+    }
+
+    private AuthResponse toResponse(User user, String message) {
+        String role = user.getRole() == null || user.getRole().isBlank() ? "CUSTOMER" : user.getRole();
+        return new AuthResponse(user.getId(), user.getName(), user.getEmail(), role, message);
     }
 }

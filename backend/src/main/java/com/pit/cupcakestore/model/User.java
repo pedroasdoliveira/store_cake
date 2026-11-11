@@ -27,6 +27,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(length = 20)
+    private String role;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -34,6 +37,9 @@ public class User {
     public void onCreate() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
+        }
+        if (role == null || role.isBlank()) {
+            role = "CUSTOMER";
         }
     }
 
@@ -67,6 +73,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {

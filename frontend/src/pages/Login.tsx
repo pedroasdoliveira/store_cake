@@ -19,7 +19,12 @@ export function Login() {
     setFeedback(null);
     try {
       const response = await api.login({ email, password });
-      login({ userId: response.userId, name: response.name, email: response.email });
+      login({
+        userId: response.userId,
+        name: response.name,
+        email: response.email,
+        role: response.role === "ADMIN" ? "ADMIN" : "CUSTOMER",
+      });
       setFeedback({ type: "success", text: response.message });
       setTimeout(() => navigate("/"), 600);
     } catch (error) {

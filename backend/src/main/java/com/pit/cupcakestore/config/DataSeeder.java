@@ -1,8 +1,11 @@
 package com.pit.cupcakestore.config;
 
 import com.pit.cupcakestore.model.Product;
+import com.pit.cupcakestore.model.User;
 import com.pit.cupcakestore.repository.ProductRepository;
+import com.pit.cupcakestore.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -11,14 +14,26 @@ import java.util.List;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
-    private final ProductRepository productRepository;
+    static final String ADMIN_EMAIL = "admin@doceninho.com";
+    static final String ADMIN_PASSWORD = "admin123";
 
-    public DataSeeder(ProductRepository productRepository) {
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public DataSeeder(
+            ProductRepository productRepository,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
+        seedAdmin();
         if (productRepository.count() > 0) {
             return;
         }
@@ -67,5 +82,17 @@ public class DataSeeder implements CommandLineRunner {
                         "Chocolate"
                 )
         ));
+    }
+
+    private void seedAdmin() {
+        if (userRepository.existsByEmailIgnoreCase(ADMIN_EMAIL)) {
+            return;
+        }
+        User admin = new User();
+        admin.setName("Administrador");
+        admin.setEmail(ADMIN_EMAIL);
+        admin.setPassword(passwordEncoder.encode(ADMIN_PASSWORD));
+        admin.setRole("ADMIN");
+        userRepository.save(admin);
     }
 }
