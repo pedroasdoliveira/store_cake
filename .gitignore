@@ -21,3 +21,5 @@ frontend/blob-report/
 # Env
 .env
 *.env
+.env.properties
+backend/.env.properties

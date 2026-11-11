@@ -55,6 +55,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>-Dspring.config.additional-location=optional:file:${project.basedir}/.env.properties</jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
